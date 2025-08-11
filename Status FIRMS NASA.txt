@@ -1,0 +1,3 @@
+Cheque quantas chamadas foram feitas, e quantas ainda restam:
+
+https://firms.modaps.eosdis.nasa.gov/mapserver/mapkey_status/?MAP_KEY=ea5750f13fed55928f298673cf59cf60
