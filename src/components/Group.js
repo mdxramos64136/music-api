@@ -1,9 +1,7 @@
 function Group() {
   return (
-    <div>
-      <div>
-        <h5 id="name"></h5>
-      </div>
+    <li>
+      <h5 id="name"></h5>
       <div>
         <label>Begin Year: </label>
         <p></p>
@@ -17,14 +15,8 @@ function Group() {
         <label>Still in Activity? </label>
         <p></p>
       </div>
-    </div>
+    </li>
   );
 }
 
 export default Group;
-
-// - Country (transforma em emoji)
-// - .area.name (País)
-// - .begin-area.name
-// - .life-span.begin (início)
-// - .life-span.ended (A banda acabou?)

@@ -23,3 +23,4 @@ yarn-debug.log*
 yarn-error.log*
 
 /Notes
+/server/server-v1.js
