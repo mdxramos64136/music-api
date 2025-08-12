@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Logo from "./components/Logo";
 
 const BASE_URL = "http://localhost:4000/api";
 
@@ -37,7 +38,15 @@ function App() {
   ////////////////////////////////////////////
   return (
     <div className="App">
-      <p>My app</p>
+      <header className="header">
+        <Logo />
+        <input
+          className="input"
+          type="text"
+          placeholder="Type the artist or group name..."
+        />
+        <button>Search</button>
+      </header>
     </div>
   );
 }

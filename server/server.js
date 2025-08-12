@@ -4,6 +4,7 @@ import cors from "cors"; // <-- CORS global
 const app = express();
 app.use(cors());
 
+//Group/ Artist Info
 app.get("/api/artist", async (req, res) => {
   const q = req.query.q || "queen";
   const URL = `https://musicbrainz.org/ws/2/artist?query=${encodeURIComponent(
