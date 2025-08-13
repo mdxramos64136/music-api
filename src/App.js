@@ -30,7 +30,7 @@ function App() {
           if (!res.ok) throw new Error(`Something went wrong:${res.status}`);
 
           const data = await res.json();
-          setContent(data);
+          setContent(data.artists ?? []);
           setDetails(null);
           setSelected(null);
 
