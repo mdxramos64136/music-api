@@ -4,7 +4,56 @@ import cors from "cors";
 const app = express();
 app.use(cors());
 
-// Busca crua no MusicBrainz: /api/artist?q=<texto>&limit=&offset=
+//Deezer: just for pics
+
+app.get("/api/photos/artist", async (req, res) => {
+  try {
+    const artistName = (req.query.name || req.query.q || "").trim();
+    if (!artistName) {
+      return res
+        .status(400)
+        .json({ error: "Missing name (or 'q') query param" });
+    }
+
+    //search
+    const deezerSearchUrl = `https://api.deezer.com/search/artist?q=${encodeURIComponent(
+      artistName
+    )}`;
+
+    const deezerResponse = await fetch(deezerSearchUrl);
+    if (!deezerResponse.ok) {
+      return res
+        .status(deezerResponse.status)
+        .json({ error: "Deezer search error" });
+    }
+
+    const deezerSearchResult = await deezerResponse.json();
+
+    //normalize only what it's need
+    const artistsWithPhotos = (deezerSearchResult.data || []).map((artist) => ({
+      deezerId: artist.id,
+      name: artist.name,
+      photoUrl:
+        artist.picture_xl ||
+        artist.picture_big ||
+        artist.picture_medium ||
+        artist.picture_small ||
+        artist.picture ||
+        null,
+      deezerLink: artist.link,
+    }));
+
+    return res.json({
+      total: deezerSearchResult.total ?? artistsWithPhotos.length,
+      artists: artistsWithPhotos,
+    });
+  } catch (err) {
+    console.error("photos/artist error:", err);
+    return res.status(500).json({ err: "Photos endpoint error" });
+  }
+});
+
+// MusicBrainz:
 app.get("/api/artist", async (req, res) => {
   try {
     const q = (req.query.q || "").trim();

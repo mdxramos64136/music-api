@@ -1,7 +1,6 @@
 import Group from "./Group";
 
 function GroupList({ content }) {
-  console.log(content.name);
   return (
     <ul className="group-list">
       {content.map((group) => (
