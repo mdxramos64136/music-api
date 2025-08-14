@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 
+// function convertToEmoji(countryCode) {
+//   const codePoints = countryCode
+//     .toUpperCase()
+//     .split("")
+//     .map((char) => 127397 + char.charCodeAt());
+//   return String.fromCodePoint(...codePoints);
+// }
+
 function Group({ content }) {
   const [artistPhotoUrl, setArtistPhotoUrl] = useState(null);
   const [isPhotoLoading, setIsPhotoLoading] = useState(false);
@@ -40,10 +48,12 @@ function Group({ content }) {
     [content.name, setIsPhotoLoading]
   );
 
+  //////////////////////////////////////
   return (
-    <li>
+    <li className="group-card">
       {artistPhotoUrl ? (
         <img
+          className="group-img"
           src={artistPhotoUrl}
           alt={`${content.name} `}
           onError={(e) => {
@@ -56,12 +66,17 @@ function Group({ content }) {
         photoError
       )}
 
-      <h3 id="name">{content.name}</h3>
-
       <div>
-        <label>Country:</label>
-        <p>{content?.area?.name ? content.area.name : "-"}</p>
-        <p>{content.country}</p>
+        <h3 id="name" className="group-name">
+          {content.name}
+        </h3>
+
+        <div className="group-country">
+          {/* <label>Country:</label> */}
+          <p>
+            {`${content.country} `} {content?.area?.name || ""}
+          </p>
+        </div>
       </div>
     </li>
   );

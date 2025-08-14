@@ -4,6 +4,14 @@ import GroupList from "./components/GroupList";
 
 const BASE_URL = "http://localhost:4000/api/artist";
 
+function convertToEmoji(countryCode) {
+  const codePoints = countryCode
+    .toUpperCase()
+    .split("")
+    .map((char) => 127397 + char.charCodeAt());
+  return String.fromCodePoint(...codePoints);
+}
+
 function App() {
   const [content, setContent] = useState([]);
   const [error, setError] = useState("");
@@ -12,6 +20,7 @@ function App() {
   const [details, setDetails] = useState(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [selected, setSelected] = useState(null); //MBDI
+  const [emoji, setEmoji] = useState("");
 
   useEffect(
     function () {
@@ -33,8 +42,10 @@ function App() {
           setContent(data.artists ?? []);
           setDetails(null);
           setSelected(null);
+          setEmoji(convertToEmoji(data.artist.country));
+          console.log(emoji);
 
-          console.log("SEARCH RESULT:", data.artists);
+          //console.log("SEARCH RESULT:", data.artists);
         } catch (err) {
           if (err.message !== "AbortError") setError(err.message);
         } finally {
