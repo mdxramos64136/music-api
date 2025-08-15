@@ -90,7 +90,10 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <Logo />
+        <div className="logo-title">
+          <Logo />
+          <h1>Info Band</h1>
+        </div>
         <input
           className="input"
           type="text"
