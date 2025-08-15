@@ -1,17 +1,39 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
-// function convertToEmoji(countryCode) {
-//   const codePoints = countryCode
-//     .toUpperCase()
-//     .split("")
-//     .map((char) => 127397 + char.charCodeAt());
-//   return String.fromCodePoint(...codePoints);
-// }
+function convertToFlag(countryCode) {
+  if (!countryCode || typeof countryCode !== "string") return ""; /**?? */
+
+  let code = countryCode.trim().toUpperCase();
+
+  if (code === "UK") code = "GB";
+  if (countryCode.length !== 2) return "";
+
+  const A = 65;
+  const isAZ = (c) => {
+    const x = c.charCodeAt(0);
+    return x >= A && x <= A + 25; /** Pq +25? */
+  };
+
+  if (!isAZ(code[0]) || !isAZ(code[1])) return "";
+
+  //regional indicator =0x1F1E6 + (letra - 'A')
+  const codePoints = [...code].map((ch) => 0x1f1e6 + (ch.charCodeAt(0) - A));
+  return String.fromCodePoint(...codePoints);
+}
 
 function Group({ content }) {
   const [artistPhotoUrl, setArtistPhotoUrl] = useState(null);
   const [isPhotoLoading, setIsPhotoLoading] = useState(false);
   const [photoError, setPhotoError] = useState("");
+  //const [flag, setFlag] = useState(null);
+
+  const countryCode =
+    content.country ||
+    (content.area?.type === "Country"
+      ? content.area?.["iso-3166-1-codes"]?.[0]
+      : null);
+
+  const flag = useMemo(() => convertToFlag(countryCode), [countryCode]);
 
   useEffect(
     function () {
@@ -74,7 +96,7 @@ function Group({ content }) {
         <div className="group-country">
           {/* <label>Country:</label> */}
           <p>
-            {`${content.country} `} {content?.area?.name || ""}
+            {`${flag} `} {content?.area?.name || ""}
           </p>
         </div>
       </div>

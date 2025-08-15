@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import Logo from "./components/Logo";
 import GroupList from "./components/GroupList";
+import GroupInfo from "./components/GroupInfo";
 
 const BASE_URL = "http://localhost:4000/api/artist";
 
-function convertToEmoji(countryCode) {
-  const codePoints = countryCode
-    .toUpperCase()
-    .split("")
-    .map((char) => 127397 + char.charCodeAt());
-  return String.fromCodePoint(...codePoints);
-}
+//   const codePoints = countryCode
+//     .toUpperCase()
+//     .split("")
+//     .map((char) => 127397 + char.charCodeAt());
+//   return String.fromCodePoint(...codePoints);
+// }
 
 function App() {
   const [content, setContent] = useState([]);
@@ -20,7 +20,7 @@ function App() {
   const [details, setDetails] = useState(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [selected, setSelected] = useState(null); //MBDI
-  const [emoji, setEmoji] = useState("");
+  //const [flag, setFlag] = useState(null);
 
   useEffect(
     function () {
@@ -40,12 +40,8 @@ function App() {
 
           const data = await res.json();
           setContent(data.artists ?? []);
-          setDetails(null);
-          setSelected(null);
-          setEmoji(convertToEmoji(data.artist.country));
-          console.log(emoji);
 
-          //console.log("SEARCH RESULT:", data.artists);
+          setSelected(null);
         } catch (err) {
           if (err.message !== "AbortError") setError(err.message);
         } finally {
@@ -57,9 +53,6 @@ function App() {
     },
     [query]
   );
-  // useEffect(() => {
-  //   if (content) console.log("RESULT:", content.artists);
-  // }, [content]);
 
   ////////////////////////////////////////////////////////////////////
   /** useEffect for Details */
@@ -87,6 +80,7 @@ function App() {
           setIsLoadingDetails(false);
         }
       }
+      getDetails();
       return () => controller.abort();
     },
     [selected]
@@ -94,7 +88,7 @@ function App() {
 
   ////////////////////////////////////////////
   return (
-    <div className="App">
+    <div className="app">
       <header className="header">
         <Logo />
         <input
@@ -106,9 +100,10 @@ function App() {
         />
       </header>
       <main className="main">
-        <div>
+        <section className="columns">
           <GroupList content={content}></GroupList>
-        </div>
+          <GroupInfo content={content}></GroupInfo>
+        </section>
       </main>
     </div>
   );

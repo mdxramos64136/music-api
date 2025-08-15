@@ -1,6 +1,6 @@
 function GroupInfo(content) {
   return (
-    <li>
+    <li className="group-info">
       <h3 id="name">{content.name}</h3>
       <div>
         <label>Begin Year: </label>
@@ -13,18 +13,18 @@ function GroupInfo(content) {
       </div>
       <div>
         <label>Founded:</label>
-        <p>{content?.["life-span"].begin}</p>
-        {content?.["life-span"].ended && (
+        <p>{content?.["life-span"]?.begin}</p>
+        {content?.["life-span"]?.ended && (
           <>
             <label>Ceased Activity:</label>
-            <p>{content?.["life-span"].end}</p>
+            <p>{content?.["life-span"]?.end}</p>
           </>
         )}
 
-        {content?.["life-span"].ended || (
+        {content?.["life-span"]?.ended || (
           <>
             <label>Active:</label>
-            <p>{content?.["life-span"].ended || "Yes"}</p>
+            <p>{content?.["life-span"]?.ended || "Yes"}</p>
           </>
         )}
       </div>

@@ -1,3 +1,18 @@
 Cheque quantas chamadas foram feitas, e quantas ainda restam:
 
 https://firms.modaps.eosdis.nasa.gov/mapserver/mapkey_status/?MAP_KEY=ea5750f13fed55928f298673cf59cf60
+
+
+- gap so se aplica na horizontal ou na direçao definida no flex-direction?
+- Me fale mais sobre o valor flex-start da prop align-items. 
+- Me fale sobre o comportamento de flex-wrap: wrap;
+- Me fale sobre :
+  column-gap: .5rem;
+  row-gap: .25rem;
+- Por que min-width: 0; evita overflow do h3 em nomes longos?
+- flex: 0 0 auto;??
+- Me fale mais sobre esta propriedade: border-bottom-*-radius
+- Você disse para evitar  % nos filhos; usar gap/padding no container com clamp().
+	- O que é clamp()
+	- e se eu usar em ou rem?
+- O que é o Gutter? 
