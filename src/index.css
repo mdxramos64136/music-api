@@ -12,9 +12,9 @@ body {
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Segoe UI Emoji",
+    "Apple Color Emoji", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
 
   background-repeat: no-repeat;
   min-height: 100vh;
@@ -35,8 +35,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.flag-emoji {
+  font-family: "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji",
+    "Twemoji Mozilla", system-ui, sans-serif !important;
+  font-variant-emoji: emoji;
+  display: inline-block;
+  line-height: 1;
+}
+
 h1 {
-  font-family: "Eagle Lake", serif;
   font-weight: 400;
   font-style: normal;
   text-align: center;
@@ -46,11 +53,11 @@ h1 {
 
 li {
   list-style: none;
-  border: 1px solid transparent; /* invisível */
-  border-top-color: transparent; /* redundante, mas explícito */
+  border: 1px solid transparent;
+  border-top-color: transparent;
   border-bottom-left-radius: 12px;
   border-top-right-radius: 12px;
-  background-clip: padding-box; /* evita que o bg ocupe a área do border */
+  background-clip: padding-box;
   overflow: hidden;
   background-color: rgb(65, 63, 61, 0.2);
 }
@@ -103,8 +110,10 @@ ul.group-list {
 }
 
 .group-img {
-  width: 5.5rem;
-  /* flex: 0 0 auto; */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .group-info {
@@ -169,4 +178,21 @@ ul.group-list {
 .main {
   margin-left: 1rem;
   margin-right: 1rem;
+}
+
+.thumb {
+  position: relative;
+  width: 5.5rem;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+.thumb__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent; /* ou um leve rgba(0,0,0,.06) */
+  pointer-events: none; /* overlay não bloqueia cliques */
 }

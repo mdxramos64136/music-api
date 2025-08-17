@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Logo from "./components/Logo";
 import GroupList from "./components/GroupList";
 import GroupInfo from "./components/GroupInfo";
+import Spinner from "./components/Spinner";
 
 const BASE_URL = "http://localhost:4000/api/artist";
 
@@ -103,10 +104,20 @@ function App() {
         />
       </header>
       <main className="main">
-        <section className="columns">
-          <GroupList content={content}></GroupList>
-          <GroupInfo content={content}></GroupInfo>
-        </section>
+        {query ? (
+          <section className="columns">
+            {isLoading ? (
+              <Spinner />
+            ) : (
+              <GroupList content={content}></GroupList>
+            )}
+            {isLoading ? (
+              <Spinner />
+            ) : (
+              <GroupInfo content={content}></GroupInfo>
+            )}
+          </section>
+        ) : null}
       </main>
     </div>
   );

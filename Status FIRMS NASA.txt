@@ -16,3 +16,10 @@ https://firms.modaps.eosdis.nasa.gov/mapserver/mapkey_status/?MAP_KEY=ea5750f13f
 	- O que é clamp()
 	- e se eu usar em ou rem?
 - O que é o Gutter? 
+
+- destrinchar no gpt:
+Sobre o spinner: O “pulo do gato”: você precisa manter o isLoading em true após receber a URL e só desligar no onLoad da <img>. E para a imagem realmente começar a baixar, ela precisa estar renderizada enquanto o spinner aparece (deixe o <img> com visibility: hidden ou opacity: 0).
+
+- Explique melhor:
+ <img
+            key={artistPhotoUrl}                 // garante novo ciclo de load se a URL mudar

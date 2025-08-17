@@ -59,7 +59,7 @@ app.get("/api/artist", async (req, res) => {
     const q = (req.query.q || "").trim();
     if (!q) return res.status(400).json({ error: "q is required" });
 
-    const limit = Number(req.query.limit || 25);
+    const limit = Number(req.query.limit || 10);
     const offset = Number(req.query.offset || 0);
 
     const url = `https://musicbrainz.org/ws/2/artist?query=${encodeURIComponent(
