@@ -42,13 +42,13 @@ function Group({ content }) {
       if (!content?.name) return;
       const abortController = new AbortController();
 
-      let cancelled = false;
+      // let cancelled = false;
 
       async function getPhoto() {
         try {
           setIsPhotoLoading(true);
           setPhotoError("");
-          setArtistPhotoUrl(null); // evita piscar imagem anterior ?????
+          setArtistPhotoUrl(null);
 
           const res = await fetch(
             `http://localhost:4000/api/photos/artist?name=${encodeURIComponent(
@@ -63,26 +63,30 @@ function Group({ content }) {
           const { artists } = await res.json();
           const url = artists?.[0]?.photoUrl ?? null;
 
-          setArtistPhotoUrl(url);
-          if (!url) return;
-
-          // Pre-Load the img outside the DOM and then updates the state
-          const img = new Image();
-          img.onload = () => {
-            if (cancelled) return;
+          if (url) {
             setArtistPhotoUrl(url);
-            setIsPhotoLoading(false);
-          };
-          img.onerror = () => {
-            if (cancelled) return;
-            setPhotoError("Failed to load the image!");
+          } else {
             setArtistPhotoUrl(null);
             setIsPhotoLoading(false);
-          };
+          }
 
-          img.src = url; // fires the download
+          // if (!url) return;
 
-          //
+          // Pre-Load the img outside the DOM and then updates the state
+          // const img = new Image();
+          // img.onload = () => {
+          //   if (cancelled) return;
+          //   setArtistPhotoUrl(url); // image goes to DOM
+          //   setIsPhotoLoading(false);
+          // };
+          // img.onerror = () => {
+          //   if (cancelled) return;
+          //   setPhotoError("Failed to load the image!");
+          //   setArtistPhotoUrl(null);
+          //   setIsPhotoLoading(false);
+          // };
+
+          // img.src = url; // fires the download
         } catch (err) {
           if (err.name !== "AbortError") {
             setPhotoError(String(err));
@@ -104,7 +108,7 @@ function Group({ content }) {
       <div className="thumb">
         <img
           className="group-img"
-          src={artistPhotoUrl ?? pic_placeholder}
+          src={imgSrc}
           alt={content.name}
           onLoad={() => setIsPhotoLoading(false)}
           onError={(e) => {
