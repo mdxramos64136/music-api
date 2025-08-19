@@ -1,10 +1,15 @@
 import Group from "./Group";
 
-function GroupList({ content }) {
+function GroupList({ content, selected, onSelected }) {
   return (
     <ul className="group-list">
       {content.map((group) => (
-        <Group key={group.id} content={group} />
+        <Group
+          key={group.id}
+          content={group}
+          onSelect={() => onSelected(group.id)}
+          isSelected={selected === group.id}
+        />
       ))}
     </ul>
   );

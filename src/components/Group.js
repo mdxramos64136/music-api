@@ -23,7 +23,7 @@ function convertToFlag(countryCode) {
   return String.fromCodePoint(...codePoints);
 }
 
-function Group({ content }) {
+function Group({ content, onSelect, isSelected }) {
   const [artistPhotoUrl, setArtistPhotoUrl] = useState(null);
   const [isPhotoLoading, setIsPhotoLoading] = useState(false);
   const [photoError, setPhotoError] = useState("");
@@ -50,6 +50,7 @@ function Group({ content }) {
           setPhotoError("");
           setArtistPhotoUrl(null);
 
+          // Front makes a GET to the server. This is the link with the server.
           const res = await fetch(
             `http://localhost:4000/api/photos/artist?name=${encodeURIComponent(
               content.name
@@ -69,24 +70,6 @@ function Group({ content }) {
             setArtistPhotoUrl(null);
             setIsPhotoLoading(false);
           }
-
-          // if (!url) return;
-
-          // Pre-Load the img outside the DOM and then updates the state
-          // const img = new Image();
-          // img.onload = () => {
-          //   if (cancelled) return;
-          //   setArtistPhotoUrl(url); // image goes to DOM
-          //   setIsPhotoLoading(false);
-          // };
-          // img.onerror = () => {
-          //   if (cancelled) return;
-          //   setPhotoError("Failed to load the image!");
-          //   setArtistPhotoUrl(null);
-          //   setIsPhotoLoading(false);
-          // };
-
-          // img.src = url; // fires the download
         } catch (err) {
           if (err.name !== "AbortError") {
             setPhotoError(String(err));
@@ -104,7 +87,9 @@ function Group({ content }) {
 
   //////////////////////////////////////
   return (
-    <li className="group-card">
+    <li
+      className={`group-card ${isSelected ? "is-selected" : ""}`}
+      onClick={() => onSelect()}>
       <div className="thumb">
         <img
           className="group-img"

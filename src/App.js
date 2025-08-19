@@ -21,7 +21,10 @@ function App() {
   const [details, setDetails] = useState(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [selected, setSelected] = useState(null); //MBDI
-  //const [flag, setFlag] = useState(null);
+
+  const [releaseGroups, setReleaseGroups] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [coversByRG, setCoversByRG] = useState({}); // opcional
 
   useEffect(
     function () {
@@ -73,6 +76,7 @@ function App() {
           if (!res.ok) throw new Error(`Something went wrong:${res.status}`);
 
           const dataDetails = await res.json();
+          setDetails(dataDetails);
 
           console.log("Details: ", dataDetails);
         } catch (err) {
@@ -86,6 +90,50 @@ function App() {
     },
     [selected]
   );
+
+  // Albuns
+  useEffect(() => {
+    if (!selected) return;
+
+    fetch(
+      `http://localhost:4000/api/artist/${selected}/release-groups?type=album&limit=20`
+    )
+      .then((res) => res.json())
+      .then((data) => setReleaseGroups(data["release-groups"] || []))
+      .catch(console.error);
+  }, [selected]);
+
+  //Members:
+  useEffect(() => {
+    if (!selected) return;
+    // 2) membros (relações)
+    fetch(`http://localhost:4000/api/artist/${selected}/members`)
+      .then((r) => r.json())
+      .then((data) => setMembers(data.relations || []))
+      .catch(console.error);
+  }, [selected]);
+
+  //Art Cover
+  useEffect(() => {
+    async function loadCovers() {
+      const entries = await Promise.all(
+        releaseGroups.map(async (rg) => {
+          const r = await fetch(
+            `http://localhost:4000/api/cover/release-group/${rg.id}`
+          );
+          const j = await r.json();
+          const thumb = j.front?.thumbnails?.small || j.front?.image || null;
+          return [rg.id, thumb];
+        })
+      );
+      setCoversByRG(Object.fromEntries(entries));
+    }
+    if (releaseGroups.length) loadCovers();
+  }, [releaseGroups]);
+
+  function onSelected(id) {
+    setSelected(id);
+  }
 
   ////////////////////////////////////////////
   return (
@@ -109,12 +157,18 @@ function App() {
             {isLoading ? (
               <Spinner />
             ) : (
-              <GroupList content={content}></GroupList>
+              <GroupList
+                content={content}
+                selected={selected}
+                onSelected={onSelected}></GroupList>
             )}
             {isLoading ? (
               <Spinner />
             ) : (
-              <GroupInfo content={content}></GroupInfo>
+              <GroupInfo
+                details={details}
+                selected={selected}
+                releaseGroups={releaseGroups}></GroupInfo>
             )}
           </section>
         ) : null}

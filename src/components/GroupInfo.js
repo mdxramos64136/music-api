@@ -1,30 +1,36 @@
-function GroupInfo(content) {
+function GroupInfo({ details }) {
+  console.log(details.name);
   return (
     <li className="group-info">
-      <h3 id="name">{content.name}</h3>
-      <div>
+      <h3 id="name">{details?.name}</h3>
+      {/* <div className="begin-year">
         <label>Begin Year: </label>
-        <p>{content?.["life-span"]?.begin}</p>
-      </div>
-      <div>
+        <p>{details?.["life-span"]?.begin || "-"}</p>
+      </div> */}
+      <div className="info-country">
         <label>Country:</label>
-        <p>{content?.area?.name ? content.area.name : "-"}</p>
-        <p>{content.country}</p>
+        <p>{details?.area?.name || ""}</p>
       </div>
-      <div>
+      <div className="founded">
         <label>Founded:</label>
-        <p>{content?.["life-span"]?.begin}</p>
-        {content?.["life-span"]?.ended && (
+        <p>{details?.["life-span"]?.begin || "-"}</p>
+      </div>
+      <div className="activity">
+        {details?.["life-span"]?.ended && (
           <>
             <label>Ceased Activity:</label>
-            <p>{content?.["life-span"]?.end}</p>
+            <p>
+              {new Date(details?.["life-span"]?.end).toLocaleDateString(
+                "pt-BR"
+              )}
+            </p>
           </>
         )}
 
-        {content?.["life-span"]?.ended || (
+        {details?.["life-span"]?.ended || (
           <>
             <label>Active:</label>
-            <p>{content?.["life-span"]?.ended || "Yes"}</p>
+            <p>{details?.["life-span"]?.ended || "Yes"}</p>
           </>
         )}
       </div>

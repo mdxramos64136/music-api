@@ -80,4 +80,108 @@ app.get("/api/artist", async (req, res) => {
   }
 });
 
+app.get("/api/artist/:id", async (req, res) => {
+  try {
+    const id = (req.params.id || "").trim();
+
+    if (!id) return res.status(400).json({ error: "Missing id" });
+
+    const url = `https://musicbrainz.org/ws/2/artist/${encodeURIComponent(
+      id
+    )}?fmt=json`;
+
+    const r = await fetch(url, {
+      headers: { "User-Agent": "InfoBand/1.0 (marceldramos@gmail.com)" },
+    });
+
+    if (!r.ok)
+      return res.status(r.status).json({ error: "MusicBrainz details error" });
+
+    const data = await r.json();
+    return res.json(data);
+  } catch (e) {
+    console.error("artist details error:", e);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
+//Albuns:
+app.get("/api/artist/:id/release-groups", async (req, res) => {
+  try {
+    const id = (req.params.id || "").trim();
+    if (!id) return res.status(400).json({ error: "Missing id" });
+
+    const type = (req.query.type || "album").trim(); // album | single | ep | ...
+    const limit = Number(req.query.limit || 20);
+    const offset = Number(req.query.offset || 0);
+
+    const url = `https://musicbrainz.org/ws/2/release-group?artist=${encodeURIComponent(
+      id
+    )}&type=${encodeURIComponent(
+      type
+    )}&limit=${limit}&offset=${offset}&fmt=json`;
+
+    const r = await fetch(url, {
+      headers: { "User-Agent": "InfoBand/1.0 (marceldramos@gmail.com)" },
+    });
+    if (!r.ok)
+      return res.status(r.status).json({ error: "MB release-group error" });
+
+    const data = await r.json(); // { 'release-groups': [...] }
+    res.json(data);
+  } catch (e) {
+    console.error("release-groups error:", e);
+    res.status(500).json({ error: "server error" });
+  }
+});
+
+//Members
+app.get("/api/artist/:id/members", async (req, res) => {
+  try {
+    const id = (req.params.id || "").trim();
+    if (!id) return res.status(400).json({ error: "Missing id" });
+
+    const url = `https://musicbrainz.org/ws/2/artist/${encodeURIComponent(
+      id
+    )}?fmt=json&inc=artist-rels`;
+
+    const r = await fetch(url, {
+      headers: { "User-Agent": "InfoBand/1.0 (marceldramos@gmail.com)" },
+    });
+    if (!r.ok) return res.status(r.status).json({ error: "MB members error" });
+
+    const data = await r.json();
+
+    const rels = (data.relations || []).filter((rel) =>
+      (rel.type || "").toLowerCase().includes("member")
+    );
+    res.json({ relations: rels });
+  } catch (e) {
+    console.error("members error:", e);
+    res.status(500).json({ error: "server error" });
+  }
+});
+
+//Cover art: Cover Art Archive
+app.get("/api/cover/release-group/:rgid", async (req, res) => {
+  try {
+    const rgid = (req.params.rgid || "").trim();
+    if (!rgid) return res.status(400).json({ error: "Missing rgid" });
+
+    const url = `https://coverartarchive.org/release-group/${encodeURIComponent(
+      rgid
+    )}`;
+    const r = await fetch(url);
+    if (!r.ok) return res.status(r.status).json({ error: "CAA error" });
+
+    const data = await r.json(); // { images: [...] }
+    // opcional: pegue só a imagem 'front'
+    const front = (data.images || []).find((img) => img.front);
+    res.json({ front: front || null, images: data.images || [] });
+  } catch (e) {
+    console.error("cover (rg) error:", e);
+    res.status(500).json({ error: "server error" });
+  }
+});
+
 app.listen(4000, () => console.log("Proxy on http://localhost:4000"));

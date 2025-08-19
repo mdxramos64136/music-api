@@ -51,6 +51,10 @@ h1 {
   color: rgba(94, 93, 92, 0.667);
 }
 
+h3 {
+  margin-bottom: 0.75rem;
+}
+
 li {
   list-style: none;
   border: 1px solid transparent;
@@ -67,6 +71,21 @@ ul.group-list {
   margin: 0;
   max-width: 100%;
   padding: 0;
+}
+
+.begin-year {
+  display: flex;
+  align-items: baseline;
+  margin: 0;
+  line-height: 0rem;
+}
+
+.begin-year p {
+  margin-left: 3px;
+}
+
+label {
+  font-weight: 500;
 }
 
 .columns {
@@ -106,7 +125,7 @@ ul.group-list {
 .group-country label {
   margin: 0;
   padding: 0;
-  line-height: 2.15; /* reduz altura */
+  line-height: 1.15; /* reduz altura */
 }
 
 .group-img {
@@ -142,6 +161,27 @@ ul.group-list {
   justify-content: space-between;
 }
 
+.info-country,
+.founded,
+.activity {
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px; /*only in containers. It "replaces" margin-left in flex/grid settings*/
+}
+
+.activity p,
+.activity label,
+.info-country p,
+.info-country label,
+.founded p,
+.founded label {
+  margin: 0;
+}
+
 .input {
   position: absolute;
   left: 50%;
@@ -154,7 +194,7 @@ ul.group-list {
   border-top-right-radius: 12px;
   margin: 0 auto;
 
-  border: 2px solid rgb(139, 139, 140); /* substitui a borda padrão */
+  border: 2px solid rgb(139, 139, 140);
 }
 
 .input:focus {
@@ -162,6 +202,11 @@ ul.group-list {
   border: 2px solid rgb(158, 156, 156);
   box-shadow: 2px 2px 10px rgba(134, 133, 133, 0.7),
     5px 5px 10px rgba(41, 40, 40, 0.7);
+}
+
+.is-selected {
+  border: 2px rgb(107, 104, 104) solid;
+  box-shadow: 2px 2px 10px rgb(88, 3, 3);
 }
 
 .logo {
