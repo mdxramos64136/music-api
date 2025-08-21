@@ -35,14 +35,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.flag-emoji {
-  font-family: "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji",
-    "Twemoji Mozilla", system-ui, sans-serif !important;
-  font-variant-emoji: emoji;
-  display: inline-block;
-  line-height: 1;
-}
-
 h1 {
   font-weight: 400;
   font-style: normal;
@@ -53,6 +45,11 @@ h1 {
 
 h3 {
   margin-bottom: 0.75rem;
+}
+
+img {
+  width: 80px;
+  height: 80px;
 }
 
 li {
@@ -71,6 +68,25 @@ ul.group-list {
   margin: 0;
   max-width: 100%;
   padding: 0;
+}
+
+.album {
+  display: flex;
+  padding-left: 0;
+  height: 5rem;
+  border-bottom: solid black 1px;
+}
+
+.album-detail {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex start;
+  margin-left: 0.5rem;
+  line-height: 2px;
+}
+
+.album-detail h4 {
+  margin-top: 0.35rem;
 }
 
 .begin-year {
@@ -103,6 +119,14 @@ label {
   min-width: 0;
   display: flex;
   flex-direction: column;
+}
+
+.flag-emoji {
+  font-family: "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji",
+    "Twemoji Mozilla", system-ui, sans-serif !important;
+  font-variant-emoji: emoji;
+  display: inline-block;
+  line-height: 1;
 }
 
 .group-card {
@@ -206,7 +230,7 @@ label {
 
 .is-selected {
   border: 2px rgb(107, 104, 104) solid;
-  box-shadow: 2px 2px 10px rgb(88, 3, 3);
+  box-shadow: 2px 2px 10px rgb(152, 150, 154), 5px 5px 5px rgb(43, 43, 43);
 }
 
 .logo {

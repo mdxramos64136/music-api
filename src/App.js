@@ -3,6 +3,8 @@ import Logo from "./components/Logo";
 import GroupList from "./components/GroupList";
 import GroupInfo from "./components/GroupInfo";
 import Spinner from "./components/Spinner";
+import Albuns from "./components/Album";
+import AlbumList from "./components/AlbumList";
 
 const BASE_URL = "http://localhost:4000/api/artist";
 
@@ -22,10 +24,11 @@ function App() {
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [selected, setSelected] = useState(null); //MBDI
 
-  const [releaseGroups, setReleaseGroups] = useState([]);
+  const [albums, setAlbums] = useState([]);
   const [members, setMembers] = useState([]);
-  const [coversByRG, setCoversByRG] = useState({}); // opcional
+  const [coverArt, setCoverArt] = useState({}); // opcional
 
+  //////////// General ////////////
   useEffect(
     function () {
       if (!query.trim() || query.length < 3) return;
@@ -58,8 +61,7 @@ function App() {
     [query]
   );
 
-  ////////////////////////////////////////////////////////////////////
-  /** useEffect for Details */
+  //////////// Details ////////////
   useEffect(
     function () {
       if (!selected) return;
@@ -91,19 +93,19 @@ function App() {
     [selected]
   );
 
-  // Albuns
+  //////////// Albuns ////////////
   useEffect(() => {
     if (!selected) return;
 
     fetch(
-      `http://localhost:4000/api/artist/${selected}/release-groups?type=album&limit=20`
+      `http://localhost:4000/api/artist/${selected}/release-groups?type=album&limit=30`
     )
       .then((res) => res.json())
-      .then((data) => setReleaseGroups(data["release-groups"] || []))
+      .then((data) => setAlbums(data["release-groups"] || []))
       .catch(console.error);
   }, [selected]);
 
-  //Members:
+  //////////// Members ////////////
   useEffect(() => {
     if (!selected) return;
     // 2) membros (relações)
@@ -113,26 +115,27 @@ function App() {
       .catch(console.error);
   }, [selected]);
 
-  //Art Cover
+  //////////// Art Cover - Cover Art Archive////////////
   useEffect(() => {
     async function loadCovers() {
       const entries = await Promise.all(
-        releaseGroups.map(async (rg) => {
-          const r = await fetch(
+        albums.map(async (rg) => {
+          const res = await fetch(
             `http://localhost:4000/api/cover/release-group/${rg.id}`
           );
-          const j = await r.json();
-          const thumb = j.front?.thumbnails?.small || j.front?.image || null;
+          const data = await res.json();
+          const thumb =
+            data.front?.thumbnails?.small || data.front?.image || null;
           return [rg.id, thumb];
         })
       );
-      setCoversByRG(Object.fromEntries(entries));
+      setCoverArt(Object.fromEntries(entries));
     }
-    if (releaseGroups.length) loadCovers();
-  }, [releaseGroups]);
-
+    if (albums.length) loadCovers();
+  }, [albums]);
+  ///////////////////////////////
   function onSelected(id) {
-    setSelected(id);
+    setSelected(id === selected ? null : id);
   }
 
   ////////////////////////////////////////////
@@ -162,13 +165,15 @@ function App() {
                 selected={selected}
                 onSelected={onSelected}></GroupList>
             )}
-            {isLoading ? (
+            {isLoadingDetails ? (
               <Spinner />
             ) : (
               <GroupInfo
                 details={details}
                 selected={selected}
-                releaseGroups={releaseGroups}></GroupInfo>
+                albums={albums}
+                coverArt={coverArt}
+              />
             )}
           </section>
         ) : null}

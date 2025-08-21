@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import "dotenv/config"; // se já usa outra forma de carregar .env, pode remover esta linha
 
 const app = express();
 app.use(cors());
@@ -53,7 +54,7 @@ app.get("/api/photos/artist", async (req, res) => {
   }
 });
 
-// MusicBrainz:
+//////////// MusicBrainz - General Info ////////////
 app.get("/api/artist", async (req, res) => {
   try {
     const q = (req.query.q || "").trim();
@@ -79,7 +80,7 @@ app.get("/api/artist", async (req, res) => {
     res.status(500).json({ error: "server error" });
   }
 });
-
+//////////// MusicBrainz - Details ////////////
 app.get("/api/artist/:id", async (req, res) => {
   try {
     const id = (req.params.id || "").trim();
@@ -175,7 +176,7 @@ app.get("/api/cover/release-group/:rgid", async (req, res) => {
     if (!r.ok) return res.status(r.status).json({ error: "CAA error" });
 
     const data = await r.json(); // { images: [...] }
-    // opcional: pegue só a imagem 'front'
+
     const front = (data.images || []).find((img) => img.front);
     res.json({ front: front || null, images: data.images || [] });
   } catch (e) {

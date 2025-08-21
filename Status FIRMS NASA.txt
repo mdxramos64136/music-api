@@ -21,5 +21,10 @@ https://firms.modaps.eosdis.nasa.gov/mapserver/mapkey_status/?MAP_KEY=ea5750f13f
 Sobre o spinner: O “pulo do gato”: você precisa manter o isLoading em true após receber a URL e só desligar no onLoad da <img>. E para a imagem realmente começar a baixar, ela precisa estar renderizada enquanto o spinner aparece (deixe o <img> com visibility: hidden ou opacity: 0).
 
 - Explique melhor:
- <img
-            key={artistPhotoUrl}                 // garante novo ciclo de load se a URL mudar
+ <img key={artistPhotoUrl}  // garante novo ciclo de load se a URL mudar
+GDRDX-FCRCD-8F7HV-BGCF9-PV46Q
+
+
+====
+VocÊ disse que...
+mas nesta linha, ainda dentro do effect, caso url tenha um valor falsy (null) nada é retornado, correto? me explique melhor, por favor. 
