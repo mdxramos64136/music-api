@@ -106,7 +106,7 @@ app.get("/api/artist/:id", async (req, res) => {
   }
 });
 
-//Albuns:
+//////////// Albuns ////////////
 app.get("/api/artist/:id/release-groups", async (req, res) => {
   try {
     const id = (req.params.id || "").trim();
@@ -136,7 +136,29 @@ app.get("/api/artist/:id/release-groups", async (req, res) => {
   }
 });
 
-//Members
+//////////// Album Cover art: Cover Art Archive ////////////
+app.get("/api/cover/release-group/:rgid", async (req, res) => {
+  try {
+    const rgid = (req.params.rgid || "").trim();
+    if (!rgid) return res.status(400).json({ error: "Missing rgid" });
+
+    const url = `https://coverartarchive.org/release-group/${encodeURIComponent(
+      rgid
+    )}`;
+    const r = await fetch(url);
+    if (!r.ok) return res.status(r.status).json({ error: "CAA error" });
+
+    const data = await r.json(); // { images: [...] }
+
+    const front = (data.images || []).find((img) => img.front);
+    res.json({ front: front || null, images: data.images || [] });
+  } catch (e) {
+    console.error("cover (rg) error:", e);
+    res.status(500).json({ error: "server error" });
+  }
+});
+
+//////////// Members ////////////
 app.get("/api/artist/:id/members", async (req, res) => {
   try {
     const id = (req.params.id || "").trim();
@@ -163,25 +185,68 @@ app.get("/api/artist/:id/members", async (req, res) => {
   }
 });
 
-//Cover art: Cover Art Archive
-app.get("/api/cover/release-group/:rgid", async (req, res) => {
+//////////// History ////////////
+// GET /api/wiki/about?title=Queen_(band)&lang=pt
+app.get("/api/wiki/about", async (req, res) => {
   try {
-    const rgid = (req.params.rgid || "").trim();
-    if (!rgid) return res.status(400).json({ error: "Missing rgid" });
+    const rawTitle = (req.query.title || "").trim();
+    const lang = (req.query.lang || "en").trim(); // "pt", "en", etc.
+    if (!rawTitle) return res.status(400).json({ error: "title is required" });
 
-    const url = `https://coverartarchive.org/release-group/${encodeURIComponent(
-      rgid
-    )}`;
-    const r = await fetch(url);
-    if (!r.ok) return res.status(r.status).json({ error: "CAA error" });
+    const userAgent = { "User-Agent": "InfoBand/1.0 (marceldramos@gmail.com)" };
+    const encodedTitle = encodeURIComponent(rawTitle);
 
-    const data = await r.json(); // { images: [...] }
+    // Endpoints REST oficiais do Wikimedia
+    const summaryUrl = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodedTitle}`;
+    const mediaUrl = `https://${lang}.wikipedia.org/api/rest_v1/page/media-list/${encodedTitle}`;
 
-    const front = (data.images || []).find((img) => img.front);
-    res.json({ front: front || null, images: data.images || [] });
-  } catch (e) {
-    console.error("cover (rg) error:", e);
-    res.status(500).json({ error: "server error" });
+    // Busca resumo + lista de mídias em paralelo
+    const [summaryResp, mediaResp] = await Promise.all([
+      fetch(summaryUrl, { headers: userAgent }),
+      fetch(mediaUrl, { headers: userAgent }),
+    ]);
+
+    if (!summaryResp.ok) {
+      return res
+        .status(summaryResp.status)
+        .json({ error: "wikipedia summary error" });
+    }
+
+    const summaryData = await summaryResp.json();
+    let images = [];
+
+    if (mediaResp.ok) {
+      const mediaData = await mediaResp.json();
+      // Pega apenas itens de imagem e escolhe um URL "melhor" disponível
+      images = (mediaData.items || [])
+        .filter((item) => item.type === "image")
+        .map((item) => {
+          const srcset = item.srcset || [];
+          const bestFromSrcset = srcset.length
+            ? srcset[srcset.length - 1]?.src
+            : null;
+          const original = item.original?.source || null;
+          const url = bestFromSrcset || original || item.src || null;
+          const thumb = item.thumbnail?.source || srcset[0]?.src || url;
+          return { title: item.title || null, url, thumbnail: thumb };
+        })
+        .filter((img) => !!img.url)
+        .slice(0, 24); // limita p/ não exagerar
+    }
+
+    return res.json({
+      source: "wikipedia",
+      title: summaryData.title,
+      extract: summaryData.extract, // texto do resumo
+      pageUrl: summaryData.content_urls?.desktop?.page || null, // link "Saiba mais"
+      thumbnail: summaryData.thumbnail?.source || null,
+      images,
+    });
+  } catch (err) {
+    console.error("wiki/about error:", err);
+    return res
+      .status(500)
+      .json({ error: "server error", details: String(err) });
   }
 });
 

@@ -3,8 +3,8 @@ import Logo from "./components/Logo";
 import GroupList from "./components/GroupList";
 import GroupInfo from "./components/GroupInfo";
 import Spinner from "./components/Spinner";
-import Albuns from "./components/Album";
-import AlbumList from "./components/AlbumList";
+// import Albuns from "./components/Album";
+// import AlbumList from "./components/AlbumList";
 
 const BASE_URL = "http://localhost:4000/api/artist";
 
@@ -16,6 +16,7 @@ const BASE_URL = "http://localhost:4000/api/artist";
 // }
 
 function App() {
+  //States
   const [content, setContent] = useState([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +29,19 @@ function App() {
   const [members, setMembers] = useState([]);
   const [coverArt, setCoverArt] = useState({}); // opcional
 
+  const [wikiAbout, setWikiAbout] = useState(null);
+  const [isWikiLoading, setIsWikiLoading] = useState(false);
+  const [wikiError, setWikiError] = useState("");
+
   //////////// General ////////////
+  function guessWikiTitle(name, type) {
+    const n = (name || "").trim();
+    if (!n) return "";
+
+    return type === "Group" ? `${n} (band)` : n;
+  }
+
+  //////////// useEffect's ////////////
   useEffect(
     function () {
       if (!query.trim() || query.length < 3) return;
@@ -92,7 +105,6 @@ function App() {
     },
     [selected]
   );
-
   //////////// Albuns ////////////
   useEffect(() => {
     if (!selected) return;
@@ -133,10 +145,68 @@ function App() {
     }
     if (albums.length) loadCovers();
   }, [albums]);
-  ///////////////////////////////
+
   function onSelected(id) {
     setSelected(id === selected ? null : id);
   }
+
+  //////////// About & More img's////////////
+  useEffect(
+    function () {
+      //pq eu tenho que settar esses states aqui e no bloco try?
+      if (!selected) {
+        setWikiAbout(null);
+        setWikiError("");
+        setIsWikiLoading(false);
+        return;
+      } //if
+
+      //pra que está linha? content.find receberá true or false. mas e aí?
+      const selectedEntry = content.find((a) => a.id === selected);
+      const name = selectedEntry?.name || details?.name;
+      const type = selectedEntry?.type || details?.type;
+      const title = guessWikiTitle(name, type);
+
+      // const title = type === "Group" ? `${name} (band)` : name;
+      // if (!title.trim()) return;
+
+      if (!title) return;
+
+      const ctrl = new AbortController();
+      let cancelled = false;
+
+      async function getInfo() {
+        try {
+          setIsWikiLoading(true);
+          setWikiError("");
+          setWikiAbout(null);
+
+          const res = await fetch(
+            `http://localhost:4000/api/wiki/about?title=${encodeURIComponent(
+              title
+            )}&lang=pt`,
+            { signal: ctrl.signal }
+          );
+
+          if (!res.ok) throw Error(`Http ${res.status}`);
+
+          const data = await res.json(); //{ title, extract, pageUrl, thumbnail, images[] }
+          setWikiAbout(data);
+        } catch (err) {
+          if (err.name)
+            if (err.name !== "AbortError") setWikiError(String(err));
+        } finally {
+          if (!cancelled) setIsWikiLoading(false);
+        }
+      }
+      getInfo();
+      return () => {
+        cancelled = true;
+        ctrl.abort();
+      };
+    },
+    [selected, details, content]
+  );
 
   ////////////////////////////////////////////
   return (
@@ -173,6 +243,9 @@ function App() {
                 selected={selected}
                 albums={albums}
                 coverArt={coverArt}
+                wikiAbout={wikiAbout}
+                isWikiLoading={isWikiLoading}
+                wikiError={wikiError}
               />
             )}
           </section>

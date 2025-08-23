@@ -74,7 +74,8 @@ ul.group-list {
   display: flex;
   padding-left: 0;
   height: 5rem;
-  border-bottom: solid black 1px;
+  /* border-bottom: solid black 1px; */
+  margin-bottom: 0.75rem;
 }
 
 .album-detail {
@@ -82,11 +83,13 @@ ul.group-list {
   flex-direction: column;
   justify-content: flex start;
   margin-left: 0.5rem;
-  line-height: 2px;
+  line-height: 1.2;
+  word-break: break-word;
 }
 
 .album-detail h4 {
   margin-top: 0.35rem;
+  font-size: clamp(0.8rem, 2vw, 1.2rem);
 }
 
 .begin-year {

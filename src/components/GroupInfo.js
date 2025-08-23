@@ -1,6 +1,15 @@
 import AlbumList from "./AlbumList";
+import About from "./About";
 
-function GroupInfo({ details, selected, albums, coverArt }) {
+function GroupInfo({
+  details,
+  selected,
+  albums,
+  coverArt,
+  wikiAbout,
+  wikiError,
+  isWikiLoading,
+}) {
   console.log(coverArt);
   return (
     <li className="group-info">
@@ -39,6 +48,11 @@ function GroupInfo({ details, selected, albums, coverArt }) {
               albums={albums}
               selected={selected}
               coverArt={coverArt}
+            />
+            <About
+              wikiAbout={wikiAbout}
+              isWikiLoading={isWikiLoading}
+              wikiError={wikiError}
             />
           </div>
         </>
