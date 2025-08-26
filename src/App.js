@@ -52,7 +52,7 @@ function App() {
         setError("");
         try {
           const res = await fetch(
-            `${BASE_URL}?q=${encodeURIComponent(query)}&limit=15`,
+            `${BASE_URL}?q=${encodeURIComponent(query)}&limit=3`,
             { signal: controller.signal }
           );
 
@@ -228,7 +228,7 @@ function App() {
         {query ? (
           <section className="columns">
             {isLoading ? (
-              <Spinner />
+              <Spinner className="" />
             ) : (
               <GroupList
                 content={content}
@@ -236,7 +236,9 @@ function App() {
                 onSelected={onSelected}></GroupList>
             )}
             {isLoadingDetails ? (
-              <Spinner />
+              <div className="group-info details-loading">
+                <Spinner />
+              </div>
             ) : (
               <GroupInfo
                 details={details}
