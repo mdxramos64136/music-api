@@ -23,7 +23,9 @@ function GroupInfo({
           </div>
           <div className="founded">
             <label>Founded:</label>
-            <p>{details?.["life-span"]?.begin || "-"}</p>
+            <p>
+              {new Date(details?.["life-span"]?.begin).getFullYear() || "-"}
+            </p>
           </div>
           <div className="activity">
             {details?.["life-span"]?.ended && (
