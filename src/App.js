@@ -3,17 +3,8 @@ import Logo from "./components/Logo";
 import GroupList from "./components/GroupList";
 import GroupInfo from "./components/GroupInfo";
 import Spinner from "./components/Spinner";
-// import Albuns from "./components/Album";
-// import AlbumList from "./components/AlbumList";
 
 const BASE_URL = "http://localhost:4000/api/artist";
-
-//   const codePoints = countryCode
-//     .toUpperCase()
-//     .split("")
-//     .map((char) => 127397 + char.charCodeAt());
-//   return String.fromCodePoint(...codePoints);
-// }
 
 function App() {
   //States
@@ -228,7 +219,9 @@ function App() {
         {query ? (
           <section className="columns">
             {isLoading ? (
-              <Spinner className="" />
+              <div className="group-info details-loading">
+                <Spinner />
+              </div>
             ) : (
               <GroupList
                 content={content}
