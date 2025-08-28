@@ -37,7 +37,7 @@ body {
     "Apple Color Emoji", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
     "Droid Sans", "Helvetica Neue", sans-serif;
 
-  background: url("./assets/leather1.jpg") center / cover no-repeat fixed;
+  background: url("./assets/leather1.webp") center / cover no-repeat fixed;
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -48,8 +48,8 @@ h1 {
   font-weight: 400;
   font-style: normal;
   text-align: center;
-  font-size: 3vh;
-  color: rgba(94, 93, 92, 0.667);
+  font-size: 3.5vh;
+  color: rgb(252, 251, 250);
 }
 
 h3 {
@@ -430,6 +430,16 @@ label {
 .logo-title {
   display: flex;
   align-items: center;
+  background-color: #00000067;
+  height: 50px;
+  margin-left: 1rem;
+  border: 2px solid black;
+  border-radius: 12px;
+}
+
+.logo-title h1 {
+  padding-left: 2rem;
+  /* font-size: 1rem; */
 }
 
 .main {

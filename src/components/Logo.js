@@ -1,9 +1,9 @@
-import rockLogo from "../assets/rock-logo.png";
+import musicalnotes from "../assets/musical-notes.webp";
 
 function Logo() {
   return (
     <div>
-      <img className="logo" src={rockLogo} alt="rock logo" />
+      <img className="logo" src={musicalnotes} alt="rock logo" />
     </div>
   );
 }

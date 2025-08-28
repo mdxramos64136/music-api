@@ -1,4 +1,3 @@
-// SimpleCarousel.jsx
 import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function SimpleCarousel({
@@ -6,7 +5,7 @@ export default function SimpleCarousel({
   title = "",
   speedSec = 40,
 }) {
-  // limpa dados e limita a 12
+  // cleans data and limit it to 12.
   const base = useMemo(() => {
     return (images || [])
       .slice(0, 12)
@@ -17,23 +16,21 @@ export default function SimpleCarousel({
       .filter((i) => !!i.src);
   }, [images, title]);
 
-  // duplica a sequência pra permitir loop perfeito em -50%
   const loop = useMemo(() => base.concat(base), [base]);
 
-  // contador "atual/total" baseado no tempo da animação
   const [active, setActive] = useState(1);
   const pausedRef = useRef(false);
 
   useEffect(() => {
-    if (base.length <= 1) return; // estático, contador = 1/1
+    if (base.length <= 1) return;
 
     const prefersReduced =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
-    if (prefersReduced) return; // sem animação automática
+    if (prefersReduced) return;
 
-    const stepMs = (speedSec * 1000) / base.length; // tempo por "foto"
+    const stepMs = (speedSec * 1000) / base.length; // timer per img
     let id = setInterval(() => {
       if (!pausedRef.current) {
         setActive((v) => (v % base.length) + 1);
