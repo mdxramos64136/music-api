@@ -24,7 +24,7 @@ function GroupInfo({ details, selected, albums, coverArt, about, content }) {
       .then((res) => res.json())
       .then((data) => setImages(data.images || []))
       .catch(console.error);
-  }, [selected, content, details]);
+  }, [selected]);
 
   return (
     <div className="group-info-container">
