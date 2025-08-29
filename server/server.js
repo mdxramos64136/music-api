@@ -1,12 +1,11 @@
 import express from "express";
 import cors from "cors";
-import "dotenv/config"; // se já usa outra forma de carregar .env, pode remover esta linha
+import "dotenv/config";
 
 const app = express();
 app.use(cors());
 
 //Deezer: just for pics
-
 app.get("/api/photos/artist", async (req, res) => {
   try {
     const artistName = (req.query.name || req.query.q || "").trim();
@@ -206,20 +205,16 @@ app.get("/api/lastfm/about", async (req, res) => {
     const data = await resLastfm.json();
     const a = data.artist || {};
 
-    // Bio vem em HTML. Aqui deixo em texto simples para sua UI atual:
     const bioHtml = a.bio?.content || "";
     const sentences = bioHtml
-      .replace(/<a[^>]*>.*?<\/a>/gi, "") // remove "Read more"
+      .replace(/<a[^>]*>.*?<\/a>/gi, "")
       .replace(/<[^>]+>/g, "") // remove tags
-      .split(/(?<=\.)\s+/) // quebra em frases
+      .split(/(?<=\.)\s+/) // brake the phrases
       .filter(Boolean);
 
-    // pega só as 3 primeiras frases
+    //How many sentences?
     const paragraphs = sentences.slice(0, 10);
 
-    // Para manter sua UI atual sem mudanças, devolvo os MESMOS nomes de campos:
-    //  - extract     (texto da bio)
-    //  - pageUrl     (link "saiba mais")
     return res.json({
       source: "lastfm",
       title: a.name || artist,
@@ -232,5 +227,53 @@ app.get("/api/lastfm/about", async (req, res) => {
   }
 });
 
+//////////// Wikipedia API - Images////////////
+app.get("/api/wiki/images", async (req, res) => {
+  try {
+    const rawTitle = (req.query.title || "").trim();
+    const lang = (req.query.lang || "en").trim();
+    if (!rawTitle) return res.status(400).json({ error: "title is required" });
+
+    const userAgent = { "User-Agent": "InfoBand/1.0 (marceldramos@gmail.com)" };
+    const encodedTitle = encodeURIComponent(rawTitle);
+
+    const mediaUrl = `https://${lang}.wikipedia.org/api/rest_v1/page/media-list/${encodedTitle}`;
+
+    const mediaResp = await fetch(mediaUrl, { headers: userAgent });
+    if (!mediaResp.ok) {
+      return res
+        .status(mediaResp.status)
+        .json({ error: "wikipedia media error" });
+    }
+
+    const mediaData = await mediaResp.json();
+
+    const images = (mediaData.items || [])
+      .filter((item) => item.type === "image")
+      .map((item) => {
+        const srcset = item.srcset || [];
+        const bestFromSrcset = srcset.length
+          ? srcset[srcset.length - 1]?.src
+          : null;
+        const original = item.original?.source || null;
+        const url = bestFromSrcset || original || item.src || null;
+        const thumb = item.thumbnail?.source || srcset[0]?.src || url;
+        return { title: item.title || null, url, thumbnail: thumb };
+      })
+      .filter((img) => !!img.url)
+      .slice(0, 5);
+
+    return res.json({
+      source: "wikipedia",
+      title: rawTitle,
+      images,
+    });
+  } catch (err) {
+    console.error("wiki/images error:", err);
+    return res
+      .status(500)
+      .json({ error: "server error", details: String(err) });
+  }
+});
 //////////////////////////////////////////////
 app.listen(4000, () => console.log("Proxy on http://localhost:4000"));

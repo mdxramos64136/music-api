@@ -1,15 +1,34 @@
 import AlbumList from "./AlbumList";
 import About from "./About";
-//import ImageCarousel from "./ImageCarousel";
 import ImageCarousel from "./ImageCarousel";
+import { useEffect, useState } from "react";
+
 function GroupInfo({ details, selected, albums, coverArt, about, content }) {
-  console.log(coverArt);
+  //console.log(coverArt);
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    if (!selected) return;
+
+    const selectedEntry = (content || []).find((a) => a.id === selected);
+    const name = selectedEntry?.name || details?.name;
+    const type = selectedEntry?.type || details?.type;
+    const title = type === "Group" ? `${name} (band)` : name;
+    if (!title) return;
+
+    fetch(
+      `http://localhost:4000/api/wiki/images?title=${encodeURIComponent(
+        title
+      )}&lang=en`
+    )
+      .then((res) => res.json())
+      .then((data) => setImages(data.images || []))
+      .catch(console.error);
+  }, [selected, content, details]);
+
   return (
     <div className="group-info-container">
-      <ImageCarousel
-        images={about?.images || []}
-        title={about?.title || details?.name}
-      />
+      <ImageCarousel images={images} title={details?.name} />
       <li className="group-info">
         {selected && (
           <>
