@@ -52,7 +52,7 @@ function Group({ content, onSelect, isSelected }) {
 
           // Front makes a GET to the server. This is the link with the server.
           const res = await fetch(
-            `http://localhost:4000/api/photos/artist?name=${encodeURIComponent(
+            `http://192.168.2.128:4000/api/photos/artist?name=${encodeURIComponent(
               content.name
             )}`,
             { signal: abortController.signal }

@@ -276,4 +276,6 @@ app.get("/api/wiki/images", async (req, res) => {
   }
 });
 //////////////////////////////////////////////
-app.listen(4000, () => console.log("Proxy on http://localhost:4000"));
+app.listen(4000, "0.0.0.0", () =>
+  console.log("Server running on http://0.0.0.0:4000")
+);

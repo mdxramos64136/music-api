@@ -5,7 +5,7 @@ import GroupInfo from "./components/GroupInfo";
 import Spinner from "./components/Spinner";
 import Header from "./components/Header";
 
-const BASE_URL = "http://localhost:4000/api/artist";
+const BASE_URL = "http://192.168.2.128:4000/api/artist";
 
 function App() {
   //States
@@ -98,7 +98,7 @@ function App() {
     if (!selected) return;
 
     fetch(
-      `http://localhost:4000/api/artist/${selected}/release-groups?type=album&limit=30`
+      `http://192.168.2.128:4000/api/artist/${selected}/release-groups?type=album&limit=30`
     )
       .then((res) => res.json())
       .then((data) => setAlbums(data["release-groups"] || []))
@@ -109,7 +109,7 @@ function App() {
   useEffect(() => {
     if (!selected) return;
     // 2) membros (relações)
-    fetch(`http://localhost:4000/api/artist/${selected}/members`)
+    fetch(`http://192.168.2.128:4000/api/artist/${selected}/members`)
       .then((r) => r.json())
       .then((data) => setMembers(data.relations || []))
       .catch(console.error);
@@ -121,7 +121,7 @@ function App() {
       const entries = await Promise.all(
         albums.map(async (rg) => {
           const res = await fetch(
-            `http://localhost:4000/api/cover/release-group/${rg.id}`
+            `http://192.168.2.128:4000/api/cover/release-group/${rg.id}`
           );
           const data = await res.json();
           const thumb =

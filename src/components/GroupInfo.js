@@ -17,7 +17,7 @@ function GroupInfo({ details, selected, albums, coverArt, about, content }) {
     if (!title) return;
 
     fetch(
-      `http://localhost:4000/api/wiki/images?title=${encodeURIComponent(
+      `http://192.168.2.128:4000/api/wiki/images?title=${encodeURIComponent(
         title
       )}&lang=en`
     )

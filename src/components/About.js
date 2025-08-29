@@ -27,7 +27,7 @@ function About({ selected, content, details }) {
         setAbout(null);
 
         const res = await fetch(
-          `http://localhost:4000/api/lastfm/about?artist=${encodeURIComponent(
+          `http://192.168.2.128:4000/api/lastfm/about?artist=${encodeURIComponent(
             name
           )}`,
           { signal: ctrl.signal }
