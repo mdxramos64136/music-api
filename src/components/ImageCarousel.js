@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-export default function SimpleCarousel({
+export default function ImageCarousel({
   images = [],
   title = "",
   speedSec = 40,

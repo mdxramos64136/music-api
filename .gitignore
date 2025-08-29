@@ -24,3 +24,6 @@ yarn-error.log*
 
 /Notes
 /server/server-v1.js
+.env
+.env.local
+.env.*.local

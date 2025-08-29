@@ -1,22 +1,14 @@
 import AlbumList from "./AlbumList";
 import About from "./About";
+//import ImageCarousel from "./ImageCarousel";
 import ImageCarousel from "./ImageCarousel";
-
-function GroupInfo({
-  details,
-  selected,
-  albums,
-  coverArt,
-  wikiAbout,
-  wikiError,
-  isWikiLoading,
-}) {
+function GroupInfo({ details, selected, albums, coverArt, about, content }) {
   console.log(coverArt);
   return (
     <div className="group-info-container">
       <ImageCarousel
-        images={wikiAbout?.images || []}
-        title={wikiAbout?.title || details?.name}
+        images={about?.images || []}
+        title={about?.title || details?.name}
       />
       <li className="group-info">
         {selected && (
@@ -51,11 +43,7 @@ function GroupInfo({
                   <p>{details?.["life-span"]?.ended || "Yes"}</p>
                 </>
               )}
-              <About
-                wikiAbout={wikiAbout}
-                isWikiLoading={isWikiLoading}
-                wikiError={wikiError}
-              />
+              <About about={about} content={content} selected={selected} />
               <AlbumList
                 albums={albums}
                 selected={selected}

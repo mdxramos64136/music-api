@@ -3,6 +3,7 @@ import Logo from "./components/Logo";
 import GroupList from "./components/GroupList";
 import GroupInfo from "./components/GroupInfo";
 import Spinner from "./components/Spinner";
+import Header from "./components/Header";
 
 const BASE_URL = "http://localhost:4000/api/artist";
 
@@ -19,10 +20,6 @@ function App() {
   const [albums, setAlbums] = useState([]);
   const [members, setMembers] = useState([]);
   const [coverArt, setCoverArt] = useState({}); // opcional
-
-  const [wikiAbout, setWikiAbout] = useState(null);
-  const [isWikiLoading, setIsWikiLoading] = useState(false);
-  const [wikiError, setWikiError] = useState("");
 
   //////////// General ////////////
   function guessWikiTitle(name, type) {
@@ -141,80 +138,10 @@ function App() {
     setSelected(id === selected ? null : id);
   }
 
-  //////////// About & More img's////////////
-  useEffect(
-    function () {
-      //pq eu tenho que settar esses states aqui e no bloco try?
-      if (!selected) {
-        setWikiAbout(null);
-        setWikiError("");
-        setIsWikiLoading(false);
-        return;
-      } //if
-
-      //pra que está linha? content.find receberá true or false. mas e aí?
-      const selectedEntry = content.find((a) => a.id === selected);
-      const name = selectedEntry?.name || details?.name;
-      const type = selectedEntry?.type || details?.type;
-      const title = guessWikiTitle(name, type);
-
-      // const title = type === "Group" ? `${name} (band)` : name;
-      // if (!title.trim()) return;
-
-      if (!title) return;
-
-      const ctrl = new AbortController();
-      let cancelled = false;
-
-      async function getInfo() {
-        try {
-          setIsWikiLoading(true);
-          setWikiError("");
-          setWikiAbout(null);
-
-          const res = await fetch(
-            `http://localhost:4000/api/wiki/about?title=${encodeURIComponent(
-              title
-            )}&lang=pt`,
-            { signal: ctrl.signal }
-          );
-
-          if (!res.ok) throw Error(`Http ${res.status}`);
-
-          const data = await res.json(); //{ title, extract, pageUrl, thumbnail, images[] }
-          setWikiAbout(data);
-        } catch (err) {
-          if (err.name)
-            if (err.name !== "AbortError") setWikiError(String(err));
-        } finally {
-          if (!cancelled) setIsWikiLoading(false);
-        }
-      }
-      getInfo();
-      return () => {
-        cancelled = true;
-        ctrl.abort();
-      };
-    },
-    [selected, details, content]
-  );
-
   ////////////////////////////////////////////
   return (
     <div className="app">
-      <header className="header">
-        <div className="logo-title">
-          <Logo />
-          <h1>Info Band</h1>
-        </div>
-        <input
-          className="input"
-          type="text"
-          placeholder="Type the artist or group name..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-      </header>
+      <Header query={query} setQuery={setQuery} />
       <main className="main">
         {query ? (
           <section className="columns">
@@ -238,9 +165,7 @@ function App() {
                 selected={selected}
                 albums={albums}
                 coverArt={coverArt}
-                wikiAbout={wikiAbout}
-                isWikiLoading={isWikiLoading}
-                wikiError={wikiError}
+                content={content}
               />
             )}
           </section>

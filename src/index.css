@@ -270,8 +270,8 @@ label {
   align-items: flex-start; /***/
   gap: 1rem;
   margin-bottom: 0.75rem;
-  max-width: 400px;
-  width: 100%;
+  /* max-width: 00px; */
+  width: 450px;
   border: 2px solid rgba(145, 143, 143, 0.55);
   border-bottom-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -422,8 +422,9 @@ label {
 }
 
 .logo {
-  padding-left: 0;
-  width: 6rem;
+  padding-left: 0.5rem;
+  padding-top: 0.75rem;
+  height: 3.5rem;
   align-content: start;
 }
 
@@ -438,7 +439,9 @@ label {
 }
 
 .logo-title h1 {
-  padding-left: 2rem;
+  padding-left: 1rem;
+  padding-right: 0.5rem;
+  /* justify-content: baseline; */
   /* font-size: 1rem; */
 }
 
@@ -473,7 +476,7 @@ label {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
   }
-  .carousel__item {
+  .carousel-item {
     scroll-snap-align: center;
   }
 }

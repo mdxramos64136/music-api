@@ -185,69 +185,52 @@ app.get("/api/artist/:id/members", async (req, res) => {
   }
 });
 
-//////////// History ////////////
-// GET /api/wiki/about?title=Queen_(band)&lang=pt
-app.get("/api/wiki/about", async (req, res) => {
+//////////// BIO - LastFM API ////////////
+app.get("/api/lastfm/about", async (req, res) => {
   try {
-    const rawTitle = (req.query.title || "").trim();
-    const lang = (req.query.lang || "en").trim(); // "pt", "en", etc.
-    if (!rawTitle) return res.status(400).json({ error: "title is required" });
+    const artist = (req.query.artist || "").trim();
+    if (!artist) return res.status(400).json({ error: "artist is required" });
 
-    const userAgent = { "User-Agent": "InfoBand/1.0 (marceldramos@gmail.com)" };
-    const encodedTitle = encodeURIComponent(rawTitle);
+    const url = `https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${encodeURIComponent(
+      artist
+    )}&autocorrect=1&api_key=${process.env.LASTFM_API_KEY}&format=json`;
 
-    // Endpoints REST oficiais do Wikimedia
-    const summaryUrl = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodedTitle}`;
-    const mediaUrl = `https://${lang}.wikipedia.org/api/rest_v1/page/media-list/${encodedTitle}`;
+    const resLastfm = await fetch(url, {
+      headers: { "User-Agent": "InfoBand/1.0 (marceldramos@gmail.com)" },
+    });
 
-    // Busca resumo + lista de mídias em paralelo
-    const [summaryResp, mediaResp] = await Promise.all([
-      fetch(summaryUrl, { headers: userAgent }),
-      fetch(mediaUrl, { headers: userAgent }),
-    ]);
-
-    if (!summaryResp.ok) {
-      return res
-        .status(summaryResp.status)
-        .json({ error: "wikipedia summary error" });
+    if (!resLastfm.ok) {
+      return res.status(resLastfm.status).json({ error: "lastfm error" });
     }
 
-    const summaryData = await summaryResp.json();
-    let images = [];
+    const data = await resLastfm.json();
+    const a = data.artist || {};
 
-    if (mediaResp.ok) {
-      const mediaData = await mediaResp.json();
-      // Pega apenas itens de imagem e escolhe um URL "melhor" disponível
-      images = (mediaData.items || [])
-        .filter((item) => item.type === "image")
-        .map((item) => {
-          const srcset = item.srcset || [];
-          const bestFromSrcset = srcset.length
-            ? srcset[srcset.length - 1]?.src
-            : null;
-          const original = item.original?.source || null;
-          const url = bestFromSrcset || original || item.src || null;
-          const thumb = item.thumbnail?.source || srcset[0]?.src || url;
-          return { title: item.title || null, url, thumbnail: thumb };
-        })
-        .filter((img) => !!img.url)
-        .slice(0, 24); // limita p/ não exagerar
-    }
+    // Bio vem em HTML. Aqui deixo em texto simples para sua UI atual:
+    const bioHtml = a.bio?.content || "";
+    const sentences = bioHtml
+      .replace(/<a[^>]*>.*?<\/a>/gi, "") // remove "Read more"
+      .replace(/<[^>]+>/g, "") // remove tags
+      .split(/(?<=\.)\s+/) // quebra em frases
+      .filter(Boolean);
 
+    // pega só as 3 primeiras frases
+    const paragraphs = sentences.slice(0, 10);
+
+    // Para manter sua UI atual sem mudanças, devolvo os MESMOS nomes de campos:
+    //  - extract     (texto da bio)
+    //  - pageUrl     (link "saiba mais")
     return res.json({
-      source: "wikipedia",
-      title: summaryData.title,
-      extract: summaryData.extract, // texto do resumo
-      pageUrl: summaryData.content_urls?.desktop?.page || null, // link "Saiba mais"
-      thumbnail: summaryData.thumbnail?.source || null,
-      images,
+      source: "lastfm",
+      title: a.name || artist,
+      bio: paragraphs,
+      pageUrl: a.url || null,
     });
   } catch (err) {
-    console.error("wiki/about error:", err);
-    return res
-      .status(500)
-      .json({ error: "server error", details: String(err) });
+    console.error("lastfm/about error:", err);
+    return res.status(500).json({ error: "server error" });
   }
 });
 
+//////////////////////////////////////////////
 app.listen(4000, () => console.log("Proxy on http://localhost:4000"));
