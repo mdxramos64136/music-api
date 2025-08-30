@@ -28,7 +28,7 @@ function GroupInfo({ details, selected, albums, coverArt, about, content }) {
 
   return (
     <div className="group-info-container">
-      <ImageCarousel images={images} title={details?.name} />
+      {selected && <ImageCarousel images={images} title={details?.name} />}
       <li className="group-info">
         {selected && (
           <>

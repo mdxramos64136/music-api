@@ -153,9 +153,11 @@ label {
   position: relative;
   width: 100%;
   margin: 0 0 12px;
+  margin-bottom: 0;
 }
 
 .carousel-viewport {
+  padding-bottom: 0;
   padding-left: 0.75rem;
   overflow: hidden;
   /* mascara nas laterais para um fade elegante (opcional) */
@@ -270,8 +272,8 @@ label {
   align-items: flex-start; /***/
   gap: 1rem;
   margin-bottom: 0.75rem;
-  /* max-width: 00px; */
-  width: 450px;
+  max-width: 450px;
+  width: 100%; /*450px;*/
   border: 2px solid rgba(145, 143, 143, 0.55);
   border-bottom-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -292,6 +294,11 @@ label {
   box-shadow: 2px 2px 10px rgba(163, 163, 165, 0.526),
     4px 4px 4px rgba(233, 232, 232, 0.597);
   z-index: 1;
+}
+
+.group-info h3 {
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .group-card,
@@ -332,7 +339,9 @@ label {
 }
 
 .group-info-container {
-  padding-left: 1rem;
+  padding: 1rem;
+  padding-top: 0;
+  padding-bottom: 1rem;
   width: 50%;
   padding-left: 0;
   border-bottom-right-radius: 12px;
@@ -347,12 +356,14 @@ label {
   width: 50%;
   padding-left: 1%;
   padding-right: 1%;
+  /* padding-right: 1rem; */
 }
 
 .group-name {
   display: flex;
   flex-direction: row;
-  margin: 0 0;
+  margin: 0.75 0;
+  /* margin-top: 0.75rem; */
   line-height: 1.15;
 }
 
@@ -482,6 +493,9 @@ label {
 
 /******* RESPONSIVITY *******/
 @media (max-width: 535.98px) {
+  h3 {
+    padding-top: 0;
+  }
   .app {
     flex-direction: column;
   }
@@ -489,6 +503,25 @@ label {
   .columns {
     margin-top: 2rem;
     flex-direction: column;
+  }
+
+  .group-card {
+    max-width: 100%;
+    width: 100%;
+    align-items: center;
+  }
+
+  .group-info-container {
+    width: 100%;
+  }
+
+  .group-list {
+    width: 100%;
+  }
+
+  .group-name {
+    margin-top: 0;
+    padding-top: 0;
   }
 
   .header {
