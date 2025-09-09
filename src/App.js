@@ -32,13 +32,18 @@ function App() {
   //////////// useEffect's ////////////
   useEffect(
     function () {
-      if (!query.trim() || query.length < 3) return;
+      if (!query.trim() || query.length < 3) {
+        setContent([]);
+        setSelected(null);
+        return;
+      }
       const controller = new AbortController();
 
       async function getContent() {
         setIsLoading(true);
         setError("");
         try {
+          setSelected(null);
           const res = await fetch(
             `${BASE_URL}?q=${encodeURIComponent(query)}&limit=3`,
             { signal: controller.signal }
@@ -49,7 +54,7 @@ function App() {
           const data = await res.json();
           setContent(data.artists ?? []);
 
-          setSelected(null);
+          //setSelected(null);
         } catch (err) {
           if (err.message !== "AbortError") setError(err.message);
         } finally {

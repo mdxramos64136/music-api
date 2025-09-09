@@ -11,8 +11,8 @@ function GroupInfo({ details, selected, albums, coverArt, about, content }) {
     if (!selected) return;
 
     const selectedEntry = (content || []).find((a) => a.id === selected);
-    const name = selectedEntry?.name || details?.name;
-    const type = selectedEntry?.type || details?.type;
+    const name = details?.name || selectedEntry?.name;
+    const type = details?.type || selectedEntry?.type;
     const title = type === "Group" ? `${name} (band)` : name;
     if (!title) return;
 

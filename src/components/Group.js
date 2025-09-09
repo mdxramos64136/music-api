@@ -24,7 +24,7 @@ function convertToFlag(countryCode) {
 }
 
 function Group({ content, onSelect, isSelected }) {
-  const [artistPhotoUrl, setArtistPhotoUrl] = useState(null);
+  const [artistPhotoUrl, setArtistPhotoUrl] = useState(undefined);
   const [isPhotoLoading, setIsPhotoLoading] = useState(false);
   const [photoError, setPhotoError] = useState("");
   //const [flag, setFlag] = useState(null);
@@ -37,51 +37,43 @@ function Group({ content, onSelect, isSelected }) {
 
   const flag = useMemo(() => convertToFlag(countryCode), [countryCode]);
 
-  useEffect(
-    function () {
-      if (!content?.name) return;
-      const abortController = new AbortController();
+  useEffect(() => {
+    if (!content?.id) return;
+    const abortController = new AbortController();
+    setArtistPhotoUrl(undefined);
 
-      // let cancelled = false;
+    async function getPhoto() {
+      try {
+        setIsPhotoLoading(true);
+        setPhotoError("");
 
-      async function getPhoto() {
-        try {
-          setIsPhotoLoading(true);
-          setPhotoError("");
-          setArtistPhotoUrl(null);
+        const res = await fetch(
+          `http://192.168.2.128:4000/api/artist/${content.id}/photo`,
+          { signal: abortController.signal }
+        );
 
-          // Front makes a GET to the server. This is the link with the server.
-          const res = await fetch(
-            `http://192.168.2.128:4000/api/photos/artist?name=${encodeURIComponent(
-              content.name
-            )}`,
-            { signal: abortController.signal }
-          );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
 
-          //get only the property artists from API....
-          const { artists } = await res.json();
-          const url = artists?.[0]?.photoUrl ?? null;
-
-          if (url) {
-            setArtistPhotoUrl(url);
-          } else {
-            setArtistPhotoUrl(null);
-            setIsPhotoLoading(false);
-          }
-        } catch (err) {
-          if (err.name !== "AbortError") {
-            setPhotoError(String(err));
-            setIsPhotoLoading(false);
-          }
+        setArtistPhotoUrl(data.photoUrl ?? null);
+        // if (data.photoUrl) {
+        //   setArtistPhotoUrl(data.photoUrl);
+        // } else {
+        //   setArtistPhotoUrl(null);
+        // }
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          setPhotoError(String(err));
         }
-      } //getPhoto
-      getPhoto();
-      return () => abortController.abort();
-    },
-    [content.name]
-  );
+      } finally {
+        setIsPhotoLoading(false);
+      }
+    }
+
+    getPhoto();
+    return () => abortController.abort();
+  }, [content.id]);
 
   const imgSrc = artistPhotoUrl ?? pic_placeholder;
 
@@ -91,21 +83,17 @@ function Group({ content, onSelect, isSelected }) {
       className={`group-card ${isSelected ? "is-selected" : ""}`}
       onClick={() => onSelect()}>
       <div className="thumb">
-        <img
-          className="group-img"
-          src={imgSrc}
-          alt={content.name}
-          onLoad={() => setIsPhotoLoading(false)}
-          onError={(e) => {
-            e.currentTarget.src = pic_placeholder;
-            setIsPhotoLoading(false);
-          }}
-          style={{ visibility: isPhotoLoading ? "hidden" : "visible" }}
-        />
-        {isPhotoLoading && (
-          <div className="thumb__overlay">
+        {artistPhotoUrl === undefined ? (
+          <div className="thumb-overlay">
             <Spinner />
           </div>
+        ) : (
+          <img
+            className="group-img"
+            src={artistPhotoUrl || pic_placeholder}
+            alt={content.name}
+            onError={(e) => (e.currentTarget.src = pic_placeholder)}
+          />
         )}
       </div>
 

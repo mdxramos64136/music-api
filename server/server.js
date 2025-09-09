@@ -5,7 +5,7 @@ import "dotenv/config";
 const app = express();
 app.use(cors());
 
-//Deezer: just for pics
+//////////// Deezer - manys pics for carousel ////////////
 app.get("/api/photos/artist", async (req, res) => {
   try {
     const artistName = (req.query.name || req.query.q || "").trim();
@@ -53,6 +53,72 @@ app.get("/api/photos/artist", async (req, res) => {
   }
 });
 
+///////////////////// MusicBrainz - Main pic /////////////////////
+// GET /api/artist/:id/photo
+app.get("/api/artist/:id/photo", async (req, res) => {
+  try {
+    const id = (req.params.id || "").trim();
+    if (!id) return res.status(400).json({ error: "Missing id" });
+
+    // 1. Busca o artista com relations (wikidata)
+    const mbUrl = `https://musicbrainz.org/ws/2/artist/${encodeURIComponent(
+      id
+    )}?fmt=json&inc=url-rels`;
+    const r = await fetch(mbUrl, {
+      headers: { "User-Agent": "InfoBand/1.0 (marceldramos@gmail.com)" },
+    });
+
+    if (!r.ok) {
+      return res.status(r.status).json({ error: "MusicBrainz error" });
+    }
+
+    const data = await r.json();
+
+    // 2. Procura relação do tipo "wikidata"
+    const wikidataRel = data.relations?.find(
+      (rel) => (rel.type || "").toLowerCase() === "wikidata"
+    );
+    const wikidataUrl = wikidataRel?.url?.resource;
+    if (!wikidataUrl) {
+      return res.json({ id, name: data.name, photoUrl: null });
+    }
+
+    // 3. Extrai QID do wikidata (ex: Q10795)
+    const qid = wikidataUrl.split("/").pop();
+
+    // 4. Busca dados no Wikidata
+    const wdUrl = `https://www.wikidata.org/wiki/Special:EntityData/${qid}.json`;
+    const wdResp = await fetch(wdUrl);
+    if (!wdResp.ok) {
+      return res
+        .status(wdResp.status)
+        .json({ error: "Wikidata fetch error", qid });
+    }
+    const wdData = await wdResp.json();
+    const entity = wdData.entities[qid];
+
+    // 5. Procura propriedade P18 (image)
+    const p18 = entity?.claims?.P18?.[0]?.mainsnak?.datavalue?.value;
+    if (!p18) {
+      return res.json({ id, name: data.name, photoUrl: null });
+    }
+
+    // 6. Monta URL do Wikimedia Commons
+    const commonsUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(
+      p18
+    )}`;
+
+    return res.json({
+      id,
+      name: data.name,
+      photoUrl: commonsUrl,
+    });
+  } catch (err) {
+    console.error("artist photo error:", err);
+    return res.status(500).json({ error: "server error" });
+  }
+});
+
 //////////// MusicBrainz - General Info ////////////
 app.get("/api/artist", async (req, res) => {
   try {
@@ -62,9 +128,10 @@ app.get("/api/artist", async (req, res) => {
     const limit = Number(req.query.limit || 10);
     const offset = Number(req.query.offset || 0);
 
+    // * is a wild car and acceptes both uppercase and lowercase
     const url = `https://musicbrainz.org/ws/2/artist?query=${encodeURIComponent(
       q
-    )}&limit=${limit}&offset=${offset}&fmt=json`;
+    )}* &limit=${limit}&offset=${offset}&fmt=json`;
 
     const r = await fetch(url, {
       headers: { "User-Agent": "MyMusicApp/1.0 (marceldramos@gmail.com)" },
@@ -73,7 +140,7 @@ app.get("/api/artist", async (req, res) => {
     if (!r.ok) return res.status(r.status).json({ error: "MusicBrainz error" });
 
     const data = await r.json(); // { count, offset, artists: [...] }
-    res.json(data); // devolve cru para o front controlar
+    res.json(data);
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "server error" });
