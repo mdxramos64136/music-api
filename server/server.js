@@ -73,7 +73,7 @@ app.get("/api/artist/:id/photo", async (req, res) => {
 
     const data = await r.json();
 
-    // 2. Procura relação do tipo "wikidata"
+    // Search for a relationship of the "wikidata" type
     const wikidataRel = data.relations?.find(
       (rel) => (rel.type || "").toLowerCase() === "wikidata"
     );
