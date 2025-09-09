@@ -60,7 +60,6 @@ app.get("/api/artist/:id/photo", async (req, res) => {
     const id = (req.params.id || "").trim();
     if (!id) return res.status(400).json({ error: "Missing id" });
 
-    // 1. Busca o artista com relations (wikidata)
     const mbUrl = `https://musicbrainz.org/ws/2/artist/${encodeURIComponent(
       id
     )}?fmt=json&inc=url-rels`;
@@ -83,10 +82,10 @@ app.get("/api/artist/:id/photo", async (req, res) => {
       return res.json({ id, name: data.name, photoUrl: null });
     }
 
-    // 3. Extrai QID do wikidata (ex: Q10795)
+    // Extracts QID from wikidata (ex: Q10795)
     const qid = wikidataUrl.split("/").pop();
 
-    // 4. Busca dados no Wikidata
+    // Search data from wiki
     const wdUrl = `https://www.wikidata.org/wiki/Special:EntityData/${qid}.json`;
     const wdResp = await fetch(wdUrl);
     if (!wdResp.ok) {
@@ -97,13 +96,13 @@ app.get("/api/artist/:id/photo", async (req, res) => {
     const wdData = await wdResp.json();
     const entity = wdData.entities[qid];
 
-    // 5. Procura propriedade P18 (image)
+    // Search for property P18 (image)
     const p18 = entity?.claims?.P18?.[0]?.mainsnak?.datavalue?.value;
     if (!p18) {
       return res.json({ id, name: data.name, photoUrl: null });
     }
 
-    // 6. Monta URL do Wikimedia Commons
+    // Mounts URL from Wikimedia Commons
     const commonsUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(
       p18
     )}`;
@@ -123,6 +122,7 @@ app.get("/api/artist/:id/photo", async (req, res) => {
 app.get("/api/artist", async (req, res) => {
   try {
     const q = (req.query.q || "").trim();
+    const query = `artist:${q}*`; //artist's name prefix
     if (!q) return res.status(400).json({ error: "q is required" });
 
     const limit = Number(req.query.limit || 10);
@@ -130,8 +130,8 @@ app.get("/api/artist", async (req, res) => {
 
     // * is a wild car and acceptes both uppercase and lowercase
     const url = `https://musicbrainz.org/ws/2/artist?query=${encodeURIComponent(
-      q
-    )}* &limit=${limit}&offset=${offset}&fmt=json`;
+      query
+    )}&limit=${limit}&offset=${offset}&fmt=json`;
 
     const r = await fetch(url, {
       headers: { "User-Agent": "MyMusicApp/1.0 (marceldramos@gmail.com)" },

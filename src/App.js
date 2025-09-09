@@ -13,6 +13,7 @@ function App() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState("");
+  const [debounced, setDebounced] = useState(""); //avoids unnecessary renders
   const [details, setDetails] = useState(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [selected, setSelected] = useState(null); //MBDI
@@ -30,9 +31,15 @@ function App() {
   }
 
   //////////// useEffect's ////////////
+  //search with debounce to avoid unnecessary requests
+  useEffect(() => {
+    const timerID = setTimeout(() => setDebounced(query.trim()), 350);
+    return () => clearTimeout(timerID);
+  }, [query]);
+
   useEffect(
     function () {
-      if (!query.trim() || query.length < 3) {
+      if (!debounced || debounced.length < 3) {
         setContent([]);
         setSelected(null);
         return;
@@ -45,7 +52,7 @@ function App() {
         try {
           setSelected(null);
           const res = await fetch(
-            `${BASE_URL}?q=${encodeURIComponent(query)}&limit=3`,
+            `${BASE_URL}?q=${encodeURIComponent(debounced)}&limit=3`,
             { signal: controller.signal }
           );
 
@@ -64,7 +71,7 @@ function App() {
       getContent();
       return () => controller.abort();
     },
-    [query]
+    [debounced]
   );
 
   //////////// Details ////////////
