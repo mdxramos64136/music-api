@@ -9,18 +9,19 @@
   --carousel-size: clamp(96px, 28vw, 140px);
   --carousel-gap: clamp(8px, 2.5vw, 16px);
   --carousel-radius: 8px;
-  --carousel-speed: 40s; /* deve bater com prop speedSec (40) */
+  --carousel-speed: 40s;
 }
 
 html {
   scrollbar-gutter: stable;
+  background: url("./assets/leather1.webp") center / cover no-repeat fixed;
 }
 
-/* 2) Fallback para browsers sem scrollbar-gutter (ou se quiser forçar) */
+/* 2) Fallback for browsers without scrollbar-gutter */
 @supports not (scrollbar-gutter: stable) {
   html {
     overflow-y: scroll;
-  } /* scrollbar sempre presente */
+  } /* scrollbar*/
 }
 
 html,
@@ -37,11 +38,11 @@ body {
     "Apple Color Emoji", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
     "Droid Sans", "Helvetica Neue", sans-serif;
 
-  background: url("./assets/leather1.webp") center / cover no-repeat fixed;
+  background: transparent;
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #111; /* fallback enquanto carrega */
+  /* background-color: #111; fallback while loading */
 }
 
 h1 {
@@ -160,7 +161,7 @@ label {
   padding-bottom: 0;
   padding-left: 0.75rem;
   overflow: hidden;
-  /* mascara nas laterais para um fade elegante (opcional) */
+  /* side masks for fancy fade */
   -webkit-mask-image: linear-gradient(
     to right,
     transparent 0,
@@ -188,7 +189,7 @@ label {
   animation: carousel-scroll var(--carousel-speed) linear infinite;
 }
 .carousel:hover .carousel-track.is-animating {
-  animation-play-state: paused; /* pausa no hover para o usuário olhar */
+  animation-play-state: paused; /*pauses the hover */
 }
 
 @keyframes carousel-scroll {
@@ -197,27 +198,27 @@ label {
   }
   to {
     transform: translateX(-50%);
-  } /* como duplicamos a lista, -50% casa com o início */
+  }
 }
 
 .carousel-item {
-  flex: 0 0 auto; /* não quebra linha */
-  width: var(--carousel-size); /* tamanho fixo e padrão */
+  flex: 0 0 auto; /* no line breaks */
+  width: var(--carousel-size); /* fixed size */
   height: var(--carousel-size);
   border-radius: var(--carousel-radius);
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.18); /* fallback enquanto a imagem carrega */
+  background: rgba(0, 0, 0, 0.18); /* fallback while img loads */
 }
 
 .carousel-img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* preenche sem distorcer */
+  object-fit: cover;
   display: block;
 }
 .img-hidden {
   opacity: 0;
-} /* mantém a célula para não quebrar a animação */
+}
 
 .carousel-counter {
   position: absolute;
@@ -238,7 +239,7 @@ label {
   gap: clamp(12px, 2vw, 24px);
   padding-inline: clamp(12px, 2vw, 24px);
   max-width: min(1200px, 100%);
-  margin-inline: auto; /* centraliza todo o bloco */
+  margin-inline: auto;
   align-items: stretch;
   /* margin: 1rem; */
 }
@@ -254,7 +255,6 @@ label {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* minimum height while loading */
   min-height: 200px;
 }
 
@@ -279,7 +279,7 @@ label {
   border-top-right-radius: 12px;
   background-clip: padding-box;
   overflow: hidden;
-  background-color: rgba(45, 44, 44, 0.88);
+  background-color: rgba(2, 2, 2, 0.618);
   color: white;
   letter-spacing: 0.2rem;
   /* transition: ease-out 500ms; */
@@ -308,7 +308,6 @@ label {
   border-top-right-radius: 12px;
   background-clip: padding-box;
   overflow: hidden;
-  /* background-color: rgba(65, 63, 61, 0.2); */
 }
 
 .group-country {
@@ -348,7 +347,7 @@ label {
   border-top-left-radius: 12px;
   background-clip: padding-box;
   overflow: hidden;
-  background-color: rgba(45, 44, 44, 0.88);
+  background-color: rgba(2, 2, 2, 0.618);
   color: white;
 }
 
@@ -474,8 +473,8 @@ label {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent; /* ou um leve rgba(0,0,0,.06) */
-  pointer-events: none; /* overlay não bloqueia cliques */
+  background: transparent;
+  pointer-events: none; /* overlay doesn blocks clicks */
 }
 
 @media (prefers-reduced-motion: reduce) {
