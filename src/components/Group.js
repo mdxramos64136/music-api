@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import pic_placeholder from "../assets/pic_placeholder.png";
 import Spinner from "./Spinner";
+import { apiFetch, API_BASE } from "../lib/api";
 
 function convertToFlag(countryCode) {
   if (!countryCode || typeof countryCode !== "string") return ""; /**?? */
@@ -47,10 +48,14 @@ function Group({ content, onSelect, isSelected }) {
         setIsPhotoLoading(true);
         setPhotoError("");
 
-        const res = await fetch(
-          `http://192.168.2.128:4000/api/artist/${content.id}/photo`,
-          { signal: abortController.signal }
-        );
+        // const res = await fetch(
+        //   `http://192.168.2.128:4000/api/artist/${content.id}/photo`,
+        //   { signal: abortController.signal }
+        // );
+
+        const res = await fetch(`${API_BASE}/api/artist/${content.id}/photo`, {
+          signal: abortController.signal,
+        });
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 

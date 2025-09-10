@@ -1,16 +1,9 @@
 import express from "express";
 import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
 import "dotenv/config";
 
 const app = express();
 app.use(cors());
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const clientBuildPath = path.join(__dirname, "..", "build");
-app.use(express.static(clientBuildPath));
 
 //////////// Deezer - manys pics for carousel ////////////
 app.get("/api/photos/artist", async (req, res) => {
@@ -219,9 +212,6 @@ app.get("/api/cover/release-group/:rgid", async (req, res) => {
       rgid
     )}`;
     const r = await fetch(url);
-
-    //if (r.status === 404) return res.json({ front: null, images: [] });
-
     if (!r.ok) return res.status(r.status).json({ error: "CAA error" });
 
     const data = await r.json(); // { images: [...] }
@@ -312,40 +302,15 @@ app.get("/api/wiki/images", async (req, res) => {
     if (!rawTitle) return res.status(400).json({ error: "title is required" });
 
     const userAgent = { "User-Agent": "InfoBand/1.0 (marceldramos@gmail.com)" };
+    const encodedTitle = encodeURIComponent(rawTitle);
 
-    // const encodedTitle = encodeURIComponent(rawTitle);
-    // const mediaUrl = `https://${lang}.wikipedia.org/api/rest_v1/page/media-list/${encodedTitle}`;
-    // const mediaResp = await fetch(mediaUrl, { headers: userAgent });
+    const mediaUrl = `https://${lang}.wikipedia.org/api/rest_v1/page/media-list/${encodedTitle}`;
 
-    // Normalize quotes and spaces
-    const normalizedTitle = rawTitle
-      .normalize("NFKC")
-      .replace(/[’‘´`]/g, "'") // troca aspas “curly” por '
-      .replace(/\s+/g, " ")
-      .trim();
-
-    let encodedTitle = encodeURIComponent(normalizedTitle);
-    let mediaUrl = `https://${lang}.wikipedia.org/api/rest_v1/page/media-list/${encodedTitle}`;
-    let mediaResp = await fetch(mediaUrl, { headers: userAgent });
-
-    // if (!mediaResp.ok) {
-    //   return res
-    //     .status(mediaResp.status)
-    //     .json({ error: "wikipedia media error" });
-    // }
-
-    // if 404, try without sufix " (band|group)" — ex.: "Guns N' Roses"
-    if (mediaResp.status === 404) {
-      const fallbackTitle = normalizedTitle.replace(/\s\((band|group)\)$/i, "");
-      if (fallbackTitle && fallbackTitle !== normalizedTitle) {
-        encodedTitle = encodeURIComponent(fallbackTitle);
-        mediaUrl = `https://${lang}.wikipedia.org/api/rest_v1/page/media-list/${encodedTitle}`;
-        mediaResp = await fetch(mediaUrl, { headers: userAgent });
-      }
-    }
-
+    const mediaResp = await fetch(mediaUrl, { headers: userAgent });
     if (!mediaResp.ok) {
-      return res.json({ source: "wikipedia", title: rawTitle, images: [] });
+      return res
+        .status(mediaResp.status)
+        .json({ error: "wikipedia media error" });
     }
 
     const mediaData = await mediaResp.json();
@@ -363,12 +328,12 @@ app.get("/api/wiki/images", async (req, res) => {
         return { title: item.title || null, url, thumbnail: thumb };
       })
       .filter((img) => !!img.url)
-      .slice(0, 6);
+      .slice(0, 5);
 
     return res.json({
       source: "wikipedia",
       title: rawTitle,
-      images: images || [],
+      images,
     });
   } catch (err) {
     console.error("wiki/images error:", err);
@@ -378,18 +343,6 @@ app.get("/api/wiki/images", async (req, res) => {
   }
 });
 //////////////////////////////////////////////
-// app.listen(4000, "0.0.0.0", () =>
-//   console.log("Server running on http://0.0.0.0:4000")
-// );
-
-// === fallback for SPA (React Router) ===
-app.get(/^\/(?!api).*/, (_req, res) => {
-  res.sendFile(path.join(clientBuildPath, "index.html"));
-});
-
-process.on("unhandledRejection", (r) => console.error("UNHANDLED", r));
-process.on("uncaughtException", (e) => console.error("UNCAUGHT", e));
-
-// === For production ===
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log("Server listening on", PORT));
+app.listen(4000, "0.0.0.0", () =>
+  console.log("Server running on http://0.0.0.0:4000")
+);

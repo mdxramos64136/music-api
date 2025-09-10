@@ -2,6 +2,7 @@ import AlbumList from "./AlbumList";
 import About from "./About";
 import ImageCarousel from "./ImageCarousel";
 import { useEffect, useState } from "react";
+import { apiFetch, API_BASE } from "../lib/api";
 
 function GroupInfo({ details, selected, albums, coverArt, about, content }) {
   //console.log(coverArt);
@@ -17,9 +18,7 @@ function GroupInfo({ details, selected, albums, coverArt, about, content }) {
     if (!title) return;
 
     fetch(
-      `http://192.168.2.128:4000/api/wiki/images?title=${encodeURIComponent(
-        title
-      )}&lang=en`
+      `${API_BASE}/api/wiki/images?title=${encodeURIComponent(title)}&lang=en`
     )
       .then((res) => res.json())
       .then((data) => setImages(data.images || []))

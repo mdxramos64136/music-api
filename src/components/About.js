@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { apiFetch, API_BASE } from "../lib/api";
 
 function About({ selected, content, details }) {
   const [about, setAbout] = useState(null);
@@ -26,10 +27,15 @@ function About({ selected, content, details }) {
         setAboutError("");
         setAbout(null);
 
+        // const res = await fetch(
+        //   `http://192.168.2.128:4000/api/lastfm/about?artist=${encodeURIComponent(
+        //     name
+        //   )}`,
+        //   { signal: ctrl.signal }
+        // );
+
         const res = await fetch(
-          `http://192.168.2.128:4000/api/lastfm/about?artist=${encodeURIComponent(
-            name
-          )}`,
+          `${API_BASE}/api/lastfm/about?artist=${encodeURIComponent(name)}`,
           { signal: ctrl.signal }
         );
 
