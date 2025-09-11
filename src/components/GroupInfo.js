@@ -2,11 +2,23 @@ import AlbumList from "./AlbumList";
 import About from "./About";
 import ImageCarousel from "./ImageCarousel";
 import { useEffect, useState } from "react";
-import { apiFetch, API_BASE } from "../lib/api";
+import { API_BASE } from "../lib/api";
+import { Helmet } from "@dr.pogodin/react-helmet";
 
 function GroupInfo({ details, selected, albums, coverArt, about, content }) {
   //console.log(coverArt);
   const [images, setImages] = useState([]);
+
+  // For React-Helmet (dr.pogodin)
+  const title = details?.name ? `${details.name} – Info Music` : "Info Music";
+  const desc = details?.name
+    ? `${details.name} on Info Music: photos, bio, years active, country of origin, and discography with cover art.`
+    : "Info Music: search bands and artists. Photos, bios, discography and cover art.";
+  const image =
+    images?.[0]?.url || "https://info-music-mr.onrender.com//og-fallback.jpg";
+  const canonical = selected
+    ? `https://info-music-mr.onrender.com/artist/${selected}`
+    : "https://info-music-mr.onrender.com/";
 
   useEffect(() => {
     if (!selected) return;
@@ -27,6 +39,21 @@ function GroupInfo({ details, selected, albums, coverArt, about, content }) {
 
   return (
     <>
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={desc} />
+        <link rel="canonical" href={canonical} />
+
+        {/* Open Graph / Twitter */}
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={desc} />
+        <meta property="og:image" content={image} />
+        <meta property="og:url" content={canonical} />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={desc} />
+        <meta name="twitter:image" content={image} />
+      </Helmet>
       {selected && (
         <div className="group-info-container">
           {selected && <ImageCarousel images={images} title={details?.name} />}

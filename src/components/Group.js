@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import pic_placeholder from "../assets/pic_placeholder.png";
 import Spinner from "./Spinner";
-import { apiFetch, API_BASE } from "../lib/api";
+import { API_BASE } from "../lib/api";
 
 function convertToFlag(countryCode) {
   if (!countryCode || typeof countryCode !== "string") return ""; /**?? */

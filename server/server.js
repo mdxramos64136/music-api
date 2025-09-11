@@ -218,9 +218,10 @@ app.get("/api/cover/release-group/:rgid", async (req, res) => {
     const url = `https://coverartarchive.org/release-group/${encodeURIComponent(
       rgid
     )}`;
+
     const r = await fetch(url);
 
-    //if (r.status === 404) return res.json({ front: null, images: [] });
+    if (r.status === 404) return res.json({ front: null, images: [] });
 
     if (!r.ok) return res.status(r.status).json({ error: "CAA error" });
 

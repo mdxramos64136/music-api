@@ -4,6 +4,7 @@ import GroupInfo from "./components/GroupInfo";
 import Spinner from "./components/Spinner";
 import Header from "./components/Header";
 import { API_BASE } from "./lib/api";
+import { Helmet } from "@dr.pogodin/react-helmet";
 
 const BASE_URL = `${API_BASE}/api/artist`;
 
@@ -142,38 +143,49 @@ function App() {
 
   ////////////////////////////////////////////
   return (
-    <div className="app">
-      <Header query={query} setQuery={setQuery} />
-      <main className="main">
-        {query ? (
-          <section className="columns">
-            {isLoading ? (
-              <div className="group-info details-loading">
-                <Spinner />
-              </div>
-            ) : (
-              <GroupList
-                content={content}
-                selected={selected}
-                onSelected={onSelected}></GroupList>
-            )}
-            {isLoadingDetails ? (
-              <div className="group-info details-loading">
-                <Spinner />
-              </div>
-            ) : (
-              <GroupInfo
-                details={details}
-                selected={selected}
-                albums={albums}
-                coverArt={coverArt}
-                content={content}
-              />
-            )}
-          </section>
-        ) : null}
-      </main>
-    </div>
+    <>
+      <Helmet>
+        <title>Info Music</title>
+        <meta
+          name="description"
+          content="Info Music: search bands and artists. Photos, bios, discography cover art, and country of origin."
+        />
+        <meta property="og:site_name" content="Info Music" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+      <div className="app">
+        <Header query={query} setQuery={setQuery} />
+        <main className="main">
+          {query ? (
+            <section className="columns">
+              {isLoading ? (
+                <div className="group-info details-loading">
+                  <Spinner />
+                </div>
+              ) : (
+                <GroupList
+                  content={content}
+                  selected={selected}
+                  onSelected={onSelected}></GroupList>
+              )}
+              {isLoadingDetails ? (
+                <div className="group-info details-loading">
+                  <Spinner />
+                </div>
+              ) : (
+                <GroupInfo
+                  details={details}
+                  selected={selected}
+                  albums={albums}
+                  coverArt={coverArt}
+                  content={content}
+                />
+              )}
+            </section>
+          ) : null}
+        </main>
+      </div>
+    </>
   );
 }
 

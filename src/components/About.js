@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { apiFetch, API_BASE } from "../lib/api";
+//import { apiFetch, API_BASE } from "../lib/api";
+import { API_BASE } from "../lib/api";
 
 function About({ selected, content, details }) {
   const [about, setAbout] = useState(null);
